@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <!-- Encabezado -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/textHeader"
+            android:layout_width="260dp"
+            android:layout_height="39dp"
+            android:layout_weight="1"
+            android:text="Estado Servidores"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
+
+        <!--Icono configuracion-->
+        <ImageView
+            android:id="@+id/iconConfig"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/settings"
+            android:contentDescription="Configuracion"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+
+    <!-- Apartado Steam -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSteam"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="6dp"
+        app:cardBackgroundColor="@color/gray_medium">
+
+        <!-- Espaciado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="240dp"
+                android:layout_height="100dp"
+                android:src="@drawable/steam"
+                android:contentDescription="Steam Logo"/>
+            <!-- Texto -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Steam"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Apartado Epic -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardEpic"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="6dp">
+        <!-- Espaciado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="170dp"
+                android:layout_height="100dp"
+                android:src="@drawable/epic"
+                android:contentDescription="Epic Logo"/>
+            <!-- Texto -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Epic Games"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Apartado Discord -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardDiscord"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="6dp">
+        <!-- Espaciado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="190dp"
+                android:layout_height="100dp"
+                android:src="@drawable/discord"
+                android:contentDescription="Discord Logo"/>
+            <!-- Título -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Discord"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
