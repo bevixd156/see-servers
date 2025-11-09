@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:gravity="center_vertical">
 
-    <!-- Información Discord-->
+    <!-- Texto de Discord -->
     <TextView
         android:id="@+id/tvDiscord"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Cargando..." />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Cargando..."
+        android:textSize="23sp" />
+
+    <!-- Círculo de estado a la derecha -->
+    <View
+        android:id="@+id/statusCircle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/circle_gray"/>
 </LinearLayout>
