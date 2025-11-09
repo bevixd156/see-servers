@@ -17,7 +17,6 @@
 
         <activity android:name=".DiscordActivity" />
         <activity android:name=".EpicActivity" />
-        <activity android:name=".SteamActivity" />
 
         <activity
             android:name=".MainActivity"

@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         // Importamos las
-        CardView cardSteam = findViewById(R.id.cardSteam);
         CardView cardEpic = findViewById(R.id.cardEpic);
         CardView cardDiscord = findViewById(R.id.cardDiscord);
         ImageView iconConfig = findViewById(R.id.iconConfig);
