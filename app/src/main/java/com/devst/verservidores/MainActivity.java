@@ -35,11 +35,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
             startActivity(intent);
         });
-        //Evento apartado Steam
-        cardSteam.setOnClickListener(View -> {
-            View.startAnimation(zoom);
-            startActivity(new Intent(this, SteamActivity.class));
-        });
         //Evento apartado Epic Games
         cardEpic.setOnClickListener(View -> {
             View.startAnimation(zoom);
