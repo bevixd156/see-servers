@@ -24,4 +24,15 @@ public class ApiFetcher {
             return gson.fromJson(response.body().string(), clase);
         }
     }
+    // Metodo adicional: si solo quieres obtener texto JSON sin convertirlo
+    public static String getJson(String url) {
+        try {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder().url(url).build();
+            Response resp = client.newCall(request).execute();
+            return resp.body().string();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
