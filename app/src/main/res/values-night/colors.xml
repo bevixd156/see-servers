@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores para modo OSCURO -->
+    <color name="text_main1">#FFFFFF</color> <!-- texto blanco -->
+    <color name="brand_primary1">#BB86FC</color> <!-- morado claro -->
+    <color name="on_primary1">#000000</color> <!-- texto sobre fondo claro -->
+    <color name="background_main1">#121212</color> <!-- fondo oscuro -->
+    <color name="app_bg1">#121212</color> <!-- gris oscuro para modo oscuro -->
+    <color name="surface">#1E1E1E</color> <!-- Fondo oscuro -->
+    <color name="divider">#333333</color> <!-- Línea gris oscura -->
+    <color name="text_main">#FFFFFF</color>  <!-- Texto principal en modo oscuro -->
+    <color name="text_dim">#BBBBBB</color>   <!-- Texto secundario gris claro -->
+    <color name="brand_primary">#BB86FC</color> <!-- Acento modo oscuro -->
+</resources>

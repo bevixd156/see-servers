@@ -24,7 +24,7 @@
             android:layout_height="39dp"
             android:layout_weight="1"
             android:text="Estado Servidores"
-            android:textColor="@color/black"
+            android:textColor="@color/text_main1"
             android:textSize="24sp"
             android:textStyle="bold"/>
 

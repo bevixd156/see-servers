@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Colores para modo CLARO -->
+    <color name="text_main1">#000000</color> <!-- texto negro -->
+    <color name="brand_primary1">#6200EE</color> <!-- morado principal -->
+    <color name="on_primary1">#FFFFFF</color> <!-- texto sobre color primario -->
+    <color name="background_main1">#FFFFFF</color> <!-- fondo blanco -->
+    <color name="app_bg1">#FFFFFF</color> <!-- blanco para modo claro -->
+    <color name="surface">#FFFFFF</color> <!-- Fondo claro -->
+    <color name="divider">#E0E0E0</color> <!-- Línea gris clara -->
+    <color name="text_main">#000000</color>  <!-- Texto principal en modo claro -->
+    <color name="text_dim">#666666</color>   <!-- Texto secundario gris -->
+    <color name="brand_primary">#6200EE</color> <!-- Color de acento -->
+
+
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray_light">#CCCCCC</color>

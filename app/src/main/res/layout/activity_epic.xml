@@ -5,10 +5,28 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Información Epic-->
+    <!-- Título superior -->
     <TextView
-        android:id="@+id/tvEpic"
+        android:id="@+id/tvTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Cargando..." />
+        android:layout_height="wrap_content"
+        android:text="Estado de Epic Games"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingBottom="16dp"/>
+
+    <!-- Scrollable container de servicios -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/servicesContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </LinearLayout>
+
+    </ScrollView>
 </LinearLayout>

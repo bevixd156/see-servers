@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:gravity="center_vertical">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-    <!-- Texto de Discord -->
+    <!-- Título superior -->
     <TextView
-        android:id="@+id/tvDiscord"
-        android:layout_width="0dp"
+        android:id="@+id/titleDiscord"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Cargando..."
-        android:textSize="23sp" />
+        android:text="Estado de Discord"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingBottom="16dp"/>
 
-    <!-- Círculo de estado a la derecha -->
-    <View
-        android:id="@+id/statusCircle"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/circle_gray"/>
+    <!-- Círculo de estado centrado -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <!-- Información textual del estado -->
+        <TextView
+            android:id="@+id/tvDiscord"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cargando..."
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <View
+            android:id="@+id/statusCircle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circle_gray"/>
+    </LinearLayout>
+
 </LinearLayout>
