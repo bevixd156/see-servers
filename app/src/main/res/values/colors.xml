@@ -13,6 +13,11 @@
     <color name="text_dim">#666666</color>   <!-- Texto secundario gris -->
     <color name="brand_primary">#6200EE</color> <!-- Color de acento -->
 
+    <color name="app_bg">#F5F7FB</color>
+    <color name="brand_primary_dark">#3B5BB5</color>
+    <color name="accent">#36D1DC</color>
+    <color name="on_primary">#FFFFFFFF</color>
+
 
 
     <color name="black">#FF000000</color>

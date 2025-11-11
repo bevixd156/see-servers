@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">verservidores</string>
+    <string name="nombre_app">MiApp</string>
+    <string name="login_titulo">Bienvenido</string>
+    <string name="login_subtitulo">Inicia sesión para continuar</string>
+    <string name="email_hint">Correo electrónico</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="btn_login">Ingresar</string>
+    <string name="olviste_pass">¿Olvidaste tu contraseña?</string>
+    <string name="no_cuenta">¿No tienes cuenta?</string>
+    <string name="crear_cuenta">Crear cuenta</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>

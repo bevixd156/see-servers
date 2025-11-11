@@ -3,5 +3,9 @@
     <style name="Base.Theme.Verservidores" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- Colores modo oscuro para la letras -->
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="android:colorBackground">@color/background_main1</item>
     </style>
 </resources>

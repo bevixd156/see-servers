@@ -18,9 +18,11 @@
         <activity android:name=".DiscordActivity" />
         <activity android:name=".EpicActivity" />
         <activity android:name=".ConfigActivity" />
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".RegistroActivity" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

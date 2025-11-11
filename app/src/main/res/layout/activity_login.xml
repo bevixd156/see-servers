@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg1">
+
+    <!-- Header con gradiente -->
+    <View
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="220dp"
+        android:background="@drawable/bg_header"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Icono de configuración (tuerca) -->
+    <ImageView
+        android:id="@+id/ivConfig"
+        android:layout_width="48dp"
+        android:layout_height="54dp"
+        android:contentDescription="Configuración"
+        android:padding="8dp"
+        android:src="@drawable/settings"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/header" />
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/tvTitulo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/login_titulo"
+        android:textColor="@color/on_primary"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:paddingStart="@dimen/space_20"
+        android:paddingEnd="@dimen/space_20"
+        app:layout_constraintBottom_toTopOf="@id/tvSubtitulo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/header"
+        app:layout_constraintVertical_bias="0.75"/>
+
+    <!-- Subtítulo -->
+    <TextView
+        android:id="@+id/tvSubtitulo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/login_subtitulo"
+        android:textColor="@color/on_primary"
+        android:alpha="0.9"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="@id/header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Tarjeta del formulario -->
+    <LinearLayout
+        android:id="@+id/tarjetaFormulario"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_card"
+        android:orientation="vertical"
+        android:elevation="6dp"
+        android:translationY="-40dp"
+        android:layout_marginStart="@dimen/space_16"
+        android:layout_marginEnd="@dimen/space_16"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_max="@dimen/max_card_width">
+
+        <EditText
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/email_hint"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/text_main"
+            android:textColorHint="@color/text_dim"
+            android:imeOptions="actionNext"
+            android:paddingTop="@dimen/space_8"
+            android:paddingBottom="@dimen/space_8"/>
+
+        <EditText
+            android:id="@+id/edtPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_12"
+            android:hint="@string/password_hint"
+            android:inputType="textPassword"
+            android:textColor="@color/text_main"
+            android:textColorHint="@color/text_dim"
+            android:imeOptions="actionDone"
+            android:paddingTop="@dimen/space_8"
+            android:paddingBottom="@dimen/space_8"/>
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_20"
+            android:backgroundTint="#A566FF"
+            android:text="@string/btn_login"
+            android:textColor="@color/on_primary"
+            android:textStyle="bold"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:transitionName="btnLoginTransition" />
+
+        <TextView
+            android:id="@+id/tvRecuperarpass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_12"
+            android:text="@string/olviste_pass"
+            android:textColor="@color/brand_primary"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_12"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_cuenta"
+                android:textColor="@color/text_dim"/>
+
+            <TextView
+                android:id="@+id/tvCrear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/crear_cuenta"
+                android:textStyle="bold"
+                android:paddingStart="@dimen/space_8"
+                android:textColor="@color/brand_primary"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
