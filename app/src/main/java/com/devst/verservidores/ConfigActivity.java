@@ -2,6 +2,7 @@ package com.devst.verservidores;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -59,7 +60,48 @@ public class ConfigActivity extends AppCompatActivity {
             );
         });
 
+        Button btnEliminarCuenta = findViewById(R.id.btnEliminarCuenta);
+        btnEliminarCuenta.setOnClickListener(v -> mostrarDialogoEliminarCuenta());
+
     }
+
+    private void mostrarDialogoEliminarCuenta() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Eliminar cuenta")
+                .setMessage("¿Estás seguro de eliminar la cuenta?")
+                .setPositiveButton("Sí", (dialog, which) -> eliminarCuenta())
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void eliminarCuenta() {
+        SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        if (userId == -1) return;
+
+        com.devst.verservidores.db.AdminSQLiteOpenHelper admin = new com.devst.verservidores.db.AdminSQLiteOpenHelper(this);
+        android.database.sqlite.SQLiteDatabase db = admin.getWritableDatabase();
+
+        int rows = db.delete("usuarios", "id = ?", new String[]{String.valueOf(userId)});
+        db.close();
+
+        if (rows > 0) {
+            // Limpiar SharedPreferences
+            prefs.edit().clear().apply();
+
+            // Mostrar mensaje
+            android.widget.Toast.makeText(this, "Cuenta eliminada con éxito", android.widget.Toast.LENGTH_LONG).show();
+
+            // Redirigir al LoginActivity
+            android.content.Intent intent = new android.content.Intent(this, LoginActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        } else {
+            android.widget.Toast.makeText(this, "Error al eliminar la cuenta", android.widget.Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     //Acción botón "Atrás"
     @Override

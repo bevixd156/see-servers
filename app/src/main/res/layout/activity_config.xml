@@ -38,6 +38,14 @@
             android:layout_height="wrap_content"
             android:text="Modo oscuro"
             android:layout_marginTop="20dp"/>
+        <Button
+            android:id="@+id/btnEliminarCuenta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Eliminar cuenta"
+            android:textColor="@android:color/white"
+            android:background="@color/red"
+            android:layout_marginTop="24dp"/>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

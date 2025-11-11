@@ -20,24 +20,39 @@
         <!-- Título -->
         <TextView
             android:id="@+id/textHeader"
-            android:layout_width="260dp"
-            android:layout_height="39dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Estado Servidores"
             android:textColor="@color/text_main1"
             android:textSize="24sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
-        <!--Icono configuracion-->
+        <!-- Icono perfil -->
+        <ImageView
+            android:id="@+id/iconPerfil"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/user"
+            android:contentDescription="Perfil"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="20dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/bg_circle"
+            android:clipToOutline="true"/>
+
+        <!-- Icono configuración -->
         <ImageView
             android:id="@+id/iconConfig"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/settings"
-            android:contentDescription="Configuracion"
+            android:contentDescription="Configuración"
             android:clickable="true"
             android:focusable="true"/>
     </LinearLayout>
+
 
 
     <!-- Apartado Epic -->

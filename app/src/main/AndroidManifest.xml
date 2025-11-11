@@ -4,6 +4,9 @@
 
     <!-- Permisos -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -15,6 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Verservidores">
 
+        <activity android:name=".EditarPerfilActivity" />
+        <activity android:name=".PerfilActivity" />
         <activity android:name=".DiscordActivity" />
         <activity android:name=".EpicActivity" />
         <activity android:name=".ConfigActivity" />

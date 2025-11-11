@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             String nombre = cursor.getString(2);
             if (storedPass != null && storedPass.equals(pass)) {
                 // Guardar sesión (user_id y nombre) en SharedPreferences
-                SharedPreferences prefs = getSharedPreferences("session", MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
                 prefs.edit().putInt("user_id", id).putString("user_name", nombre).apply();
 
                 // Ir a MainActivity
