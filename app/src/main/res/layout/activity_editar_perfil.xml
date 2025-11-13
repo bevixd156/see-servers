@@ -27,7 +27,7 @@
             android:id="@+id/edtNombre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre"
+            android:hint="Nombre de usuario"
             android:layout_marginTop="16dp"/>
 
         <EditText
@@ -43,5 +43,8 @@
             android:layout_height="wrap_content"
             android:text="Guardar cambios"
             android:layout_marginTop="20dp"/>
+
+
+
     </LinearLayout>
 </ScrollView>

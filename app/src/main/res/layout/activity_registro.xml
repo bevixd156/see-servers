@@ -33,7 +33,7 @@
             android:id="@+id/edtNombre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre"
+            android:hint="Nombre de usuario"
             android:layout_marginTop="14dp"
             android:inputType="textPersonName"/>
 
@@ -49,7 +49,7 @@
             android:id="@+id/edtPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Contraseña"
+            android:hint="Contraseña (mínimo 6 caracteres)"
             android:layout_marginTop="14dp"
             android:inputType="textPassword"/>
 
@@ -57,7 +57,7 @@
             android:id="@+id/edtPass2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Repetir contraseña"
+            android:hint="Confirmar contraseña"
             android:layout_marginTop="14dp"
             android:inputType="textPassword"/>
 
@@ -74,7 +74,7 @@
             android:id="@+id/btnVolverLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ya tengo cuenta"
+            android:text="Ya tengo una cuenta"
             android:layout_marginTop="12dp"
             android:textColor="@color/brand_primary"/>
     </LinearLayout>
