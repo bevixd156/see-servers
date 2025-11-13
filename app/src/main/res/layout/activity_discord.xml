@@ -3,8 +3,20 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="@drawable/bg_back">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="@android:color/white"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Título superior -->
     <TextView
@@ -15,12 +27,15 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:paddingBottom="16dp"/>
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"/>
 
     <!-- Círculo de estado centrado -->
     <LinearLayout
         android:orientation="horizontal"
         android:background="@drawable/bg_card"
+        android:layout_marginStart="@dimen/space_16"
+        android:layout_marginEnd="@dimen/space_16"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical">

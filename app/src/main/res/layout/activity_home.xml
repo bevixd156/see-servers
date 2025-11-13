@@ -6,9 +6,21 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     tools:context=".HomeActivity"
     android:background="@drawable/bg_back">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="@android:color/white"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Encabezado -->
     <LinearLayout
@@ -24,9 +36,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Estado Servidores"
+            android:text="Estado de los servidores"
             android:textColor="@color/text_main1"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <!-- Icono perfil -->
