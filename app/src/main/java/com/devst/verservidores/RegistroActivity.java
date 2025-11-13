@@ -45,18 +45,29 @@ public class RegistroActivity extends AppCompatActivity {
         String pass1 = edtPass.getText().toString();
         String pass2 = edtPass2.getText().toString();
 
+
+        //Validamos si estan llenos todos los campos
         if (nombre.isEmpty() || correo.isEmpty() || pass1.isEmpty() || pass2.isEmpty()) {
             Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        //Validamos si la contraseña es válida en los 2 campos
         if (!pass1.equals(pass2)) {
             Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Validamos si el correo es válido
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            Toast.makeText(this, "Correo electrónico inválido", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
         SQLiteDatabase db = admin.getWritableDatabase();
+
+        String fechaRegistro = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(new java.util.Date());
 
         Cursor cursor = db.rawQuery("SELECT id FROM usuarios WHERE correo = ?", new String[]{correo});
         if (cursor.moveToFirst()) {
@@ -71,7 +82,7 @@ public class RegistroActivity extends AppCompatActivity {
         values.put("nombre", nombre);
         values.put("correo", correo);
         values.put("password", pass1);
-        values.put("fecha_registro", System.currentTimeMillis() + "");
+        values.put("fecha_registro", fechaRegistro);
         values.put("foto_perfil", "");
 
         long resultado = db.insert("usuarios", null, values);
