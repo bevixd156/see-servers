@@ -39,6 +39,16 @@
             android:layout_marginTop="4dp"
             android:enabled="false"/>
 
+        <TextView
+            android:id="@+id/txtFechaRegistro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Se unió el: --/--/----"
+            android:textSize="16sp"
+            android:layout_marginTop="6dp"
+            android:enabled="false" />
+
+
         <Button
             android:id="@+id/btnEditarPerfil"
             android:layout_width="wrap_content"
