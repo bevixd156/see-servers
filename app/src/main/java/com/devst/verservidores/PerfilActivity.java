@@ -22,10 +22,8 @@ import java.io.File;
 public class PerfilActivity extends AppCompatActivity {
 
     private ImageView imgPerfil;
-    private TextView txtNombre, txtCorreo, txtFechaRegistro;
+    private TextView txtNombre, txtCorreo;
     private Button btnEditarPerfil;
-
-    //Variable para que traiga los datos del usuario
     private int userId;
 
     @Override
@@ -36,7 +34,6 @@ public class PerfilActivity extends AppCompatActivity {
         imgPerfil = findViewById(R.id.imgPerfil);
         txtNombre = findViewById(R.id.txtNombrePerfil);
         txtCorreo = findViewById(R.id.txtCorreoPerfil);
-        txtFechaRegistro = findViewById(R.id.txtFechaRegistro);
         btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
 
         // Recuperar ID del usuario
@@ -47,7 +44,7 @@ public class PerfilActivity extends AppCompatActivity {
         // Cargar datos
         cargarDatosUsuario(userId);
 
-        // Botón para ir a editar el perfil
+        // Botón para ir a edición
         btnEditarPerfil.setOnClickListener(v -> {
             Intent intent = new Intent(PerfilActivity.this, EditarPerfilActivity.class);
             intent.putExtra("user_id", userId);
@@ -55,13 +52,12 @@ public class PerfilActivity extends AppCompatActivity {
         });
     }
 
-    //Función para que se carguen los datos del usuario
     private void cargarDatosUsuario(int userId) {
         AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
         SQLiteDatabase db = admin.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
-                "SELECT nombre, correo, fecha_registro, foto_perfil FROM usuarios WHERE id = ?",
+                "SELECT nombre, correo, foto_perfil FROM usuarios WHERE id = ?",
                 new String[]{String.valueOf(userId)}
         );
 
@@ -71,17 +67,7 @@ public class PerfilActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             txtNombre.setText(cursor.getString(0));
             txtCorreo.setText(cursor.getString(1));
-
-            // Mostrar fecha formateada
-            String fecha = cursor.getString(2);
-            if (fecha != null && !fecha.isEmpty()) {
-                txtFechaRegistro.setText("Se unió el: " + fecha);
-            } else {
-                txtFechaRegistro.setText("Fecha no disponible");
-            }
-
-            // Carga de imagend e perfil si existe
-            String foto = cursor.getString(3);
+            String foto = cursor.getString(2);
             if (foto != null && !foto.isEmpty()) {
                 File file = new File(Uri.parse(foto).getPath());
                 if (file.exists()) {

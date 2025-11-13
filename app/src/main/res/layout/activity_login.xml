@@ -6,14 +6,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_bg1">
+    android:background="@drawable/bg_back">
 
     <!-- Header con gradiente -->
     <View
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="220dp"
-        android:background="@drawable/bg_header"
+        android:background="@drawable/bg_back"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -24,7 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/login_titulo"
-        android:textColor="@color/on_primary"
+        android:textColor="@color/black"
         android:textSize="28sp"
         android:textStyle="bold"
         android:paddingStart="@dimen/space_20"
