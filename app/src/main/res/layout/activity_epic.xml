@@ -74,6 +74,18 @@
 
             <!-- Aquí se agregarán más filas dinámicamente desde EpicActivity -->
         </LinearLayout>
+    </ScrollView>
 
-</ScrollView>
+    <!-- Caja fija de comentarios -->
+    <LinearLayout
+        android:id="@+id/commentsContainer"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/bg_card"
+        android:padding="12dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"/>
+        <!-- Aquí se agregarán comentarios dinámicamente -->
 </LinearLayout>

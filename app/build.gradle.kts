@@ -36,6 +36,8 @@ dependencies {
     // Dependencias necesarias para la conexión de los servidores a través de okhttp3 y gson
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.google.code.gson:gson:2.11.0")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
 
     implementation(libs.appcompat)
     implementation(libs.material)

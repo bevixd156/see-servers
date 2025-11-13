@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_back">
 
+    <!-- Toolbar con flecha de regreso -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
@@ -16,10 +17,9 @@
             android:layout_height="match_parent"
             android:background="?attr/colorPrimary"
             app:titleTextColor="@android:color/white"/>
-
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Título superior -->
+    <!-- Título de la pantalla -->
     <TextView
         android:id="@+id/titleDiscord"
         android:layout_width="match_parent"
@@ -28,34 +28,114 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:paddingBottom="16dp"
-        android:paddingTop="16dp"/>
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"/>
 
-    <!-- Círculo de estado centrado -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:background="@drawable/bg_card"
-        android:layout_marginStart="@dimen/space_16"
-        android:layout_marginEnd="@dimen/space_16"
+    <!-- Contenedor de estado de servicios -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/servicesContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:layout_marginStart="@dimen/space_16"
+            android:layout_marginEnd="@dimen/space_16"
+            android:padding="16dp">
+
+            <!-- Bloque de ejemplo de un servicio -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvDiscord"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Cargando..."
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:id="@+id/statusCircle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/circle_gray"/>
+            </LinearLayout>
+
+            <!-- Aquí se agregarán más bloques dinámicamente desde DiscordActivity -->
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Contenedor de comentarios -->
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:text="Comentarios"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:layout_marginStart="@dimen/space_16"
+        android:layout_marginEnd="@dimen/space_16"/>
 
-        <!-- Información textual del estado -->
-        <TextView
-            android:id="@+id/tvDiscord"
+    <ScrollView
+        android:id="@+id/scrollComments"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:fillViewport="true"
+        android:layout_marginStart="@dimen/space_16"
+        android:layout_marginEnd="@dimen/space_16">
+
+        <LinearLayout
+            android:id="@+id/commentsContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:background="@drawable/bg_card">
+            <!-- Aquí se agregarán los comentarios dinámicamente -->
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Caja para agregar nuevo comentario -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:layout_marginStart="@dimen/space_16"
+        android:layout_marginEnd="@dimen/space_16">
+
+        <EditText
+            android:id="@+id/edtNewComment"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cargando..."
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:hint="Escribe un comentario"
+            android:background="@drawable/bg_card"
+            android:padding="12dp"
+            android:textColor="?android:textColorPrimary"
+            android:textColorHint="?android:textColorHint"/>
 
-        <View
-            android:id="@+id/statusCircle"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/circle_gray"/>
+        <Button
+            android:id="@+id/btnSendComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enviar"
+            android:layout_marginStart="8dp"/>
     </LinearLayout>
 
 </LinearLayout>
