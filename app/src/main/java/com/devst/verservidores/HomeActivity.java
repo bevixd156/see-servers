@@ -73,7 +73,11 @@ public class HomeActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             String foto = cursor.getString(0);
             if (foto != null && !foto.isEmpty()) {
-                iconPerfil.setImageURI(Uri.parse(foto));
+                try {
+                    iconPerfil.setImageURI(Uri.parse(foto));
+                } catch (Exception e) {
+                    iconPerfil.setImageResource(R.drawable.user);
+                }
             }
         }
 

@@ -43,10 +43,10 @@
             android:id="@+id/txtFechaRegistro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Se unió el: --/--/----"
+            android:text="Registrado el: --/--/----"
             android:textSize="16sp"
-            android:layout_marginTop="6dp"
-            android:enabled="false" />
+            android:textColor="@color/text_main1"/>
+
 
 
         <Button
