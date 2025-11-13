@@ -19,7 +19,7 @@ import java.io.File;
 public class PerfilActivity extends AppCompatActivity {
 
     private ImageView imgPerfil;
-    private TextView txtNombre, txtCorreo, txtFecha;
+    private TextView txtNombre, txtCorreo, txtFechaRegistro;
     private Button btnEditarPerfil;
     private int userId;
 
@@ -61,7 +61,7 @@ public class PerfilActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             txtNombre.setText(cursor.getString(0));
             txtCorreo.setText(cursor.getString(1));
-            txtFecha.setText("Se unió el: " + cursor.getString(3));
+            txtFechaRegistro.setText("Se unió el: " + cursor.getString(3));
 
             String foto = cursor.getString(2);
             if (foto != null && !foto.isEmpty()) {
