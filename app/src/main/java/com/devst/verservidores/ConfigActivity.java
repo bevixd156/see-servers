@@ -65,15 +65,17 @@ public class ConfigActivity extends AppCompatActivity {
 
     }
 
+    //Diálogo para eliminar la cuenta
     private void mostrarDialogoEliminarCuenta() {
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Eliminar cuenta")
-                .setMessage("¿Estás seguro de eliminar la cuenta?")
+                .setMessage("¿Estás seguro de que quieres eliminar la cuenta?")
                 .setPositiveButton("Sí", (dialog, which) -> eliminarCuenta())
                 .setNegativeButton("No", null)
                 .show();
     }
 
+    //Función para Delete de eliminar la cuenta
     private void eliminarCuenta() {
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         int userId = prefs.getInt("user_id", -1);
