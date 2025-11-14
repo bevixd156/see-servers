@@ -53,15 +53,16 @@
             android:background="@color/red"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="12dp"/>
-        <ImageView
-            android:id="@+id/gitHubWeb"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/github"
-            android:contentDescription="Github"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:clipToOutline="true"/>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/gitHubWeb"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/github"
+        android:contentDescription="Github"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
