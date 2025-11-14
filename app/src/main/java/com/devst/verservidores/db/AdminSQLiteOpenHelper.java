@@ -60,11 +60,14 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
     // Obtener comentarios de un tipo específico (ej: "discord")
     public Cursor getComments(String tipo) {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT c.comentario, c.fecha, u.nombre, u.foto_perfil " +
-                "FROM comentarios c " +
-                "INNER JOIN usuarios u ON c.user_id = u.id " +
-                "WHERE c.tipo = ? " +
-                "ORDER BY c.id ASC", new String[]{tipo});
+        return db.rawQuery(
+                "SELECT c.user_id, c.comentario, c.fecha, u.nombre, u.foto_perfil " +
+                        "FROM comentarios c " +
+                        "INNER JOIN usuarios u ON c.user_id = u.id " +
+                        "WHERE c.tipo = ? " +
+                        "ORDER BY c.id ASC",
+                new String[]{tipo}
+        );
     }
 
     public Cursor getPublicUserById(int userId){

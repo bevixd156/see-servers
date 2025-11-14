@@ -1,5 +1,6 @@
 package com.devst.verservidores;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -54,7 +56,7 @@ public class DiscordActivity extends AppCompatActivity {
 
         dbHelper = new AdminSQLiteOpenHelper(this);
 
-        // **Obtener usuario logueado desde SharedPreferences**
+        // Obtener usuario logueado desde SharedPreferences
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         currentUserId = prefs.getInt("user_id", -1); // -1 si no hay usuario logueado
         if(currentUserId == -1){
@@ -75,11 +77,10 @@ public class DiscordActivity extends AppCompatActivity {
                 // Guardar en DB
                 dbHelper.insertComment(currentUserId, message, TIPO_SERVICIO, timestamp);
 
-                // Recargar lista de comentarios
-                loadComments();
-
                 // Limpiar EditText
                 edtNewComment.setText("");
+                // Recargar lista de comentarios
+                loadComments();
 
                 // Scroll al final
                 ScrollView scrollView = findViewById(R.id.scrollComments);
@@ -175,30 +176,45 @@ public class DiscordActivity extends AppCompatActivity {
         Cursor cursor = dbHelper.getComments(TIPO_SERVICIO);
         if (cursor != null && cursor.moveToFirst()) {
             do {
+                int userIdDelComentario = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow("nombre"));
                 String message = cursor.getString(cursor.getColumnIndexOrThrow("comentario"));
                 String timestamp = cursor.getString(cursor.getColumnIndexOrThrow("fecha"));
                 String profileUrl = cursor.getString(cursor.getColumnIndexOrThrow("foto_perfil"));
 
-                addComment(username, message, timestamp, profileUrl);
+                addComment(username, message, timestamp, profileUrl, userIdDelComentario);
 
             } while (cursor.moveToNext());
             cursor.close();
         }
     }
 
-    private void addComment(String username, String message, String timestamp, String profileUrl) {
+    private void addComment(String username, String message, String timestamp, String profileUrl, int useridDelComentario) {
         LinearLayout commentBlock = new LinearLayout(this);
         commentBlock.setOrientation(LinearLayout.HORIZONTAL);
         commentBlock.setPadding(8, 8, 8, 8);
         commentBlock.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_card));
 
-        // Imagen de perfil
         ImageView profile = new ImageView(this);
         LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(80, 80);
         imgParams.setMarginEnd(8);
         profile.setLayoutParams(imgParams);
-        Glide.with(this).load(profileUrl).circleCrop().into(profile);
+
+        if (profileUrl != null && !profileUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(profileUrl)
+                    .circleCrop()
+                    .into(profile);
+        } else {
+            profile.setImageResource(R.drawable.user);
+        }
+
+        // Click en la imagen para abrir PerfilPublicoActivity
+        profile.setOnClickListener(v -> {
+            Intent intent = new Intent(this, PerfilPublicoActivity.class);
+            intent.putExtra("user_id", useridDelComentario); // enviamos el ID simulado
+            startActivity(intent);
+        });
 
         // Contenedor de texto
         LinearLayout textContainer = new LinearLayout(this);
