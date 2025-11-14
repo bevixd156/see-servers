@@ -6,14 +6,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.activity.EdgeToEdge;
 
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import androidx.appcompat.widget.Toolbar;
 
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 
@@ -26,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // Referencias a los elementos de UI
+        Toolbar toolbar = findViewById(R.id.toolbar);
         CardView cardEpic = findViewById(R.id.cardEpic);
         CardView cardDiscord = findViewById(R.id.cardDiscord);
         ImageView iconConfig = findViewById(R.id.iconConfig);
@@ -51,6 +56,9 @@ public class HomeActivity extends AppCompatActivity {
             v.startAnimation(zoom);
             startActivity(new Intent(this, DiscordActivity.class));
         });
+
+        setSupportActionBar(toolbar);
+
     }
 
     private void cargarFotoPerfil() {
@@ -90,6 +98,24 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         // Actualiza la foto si se cambió
         cargarFotoPerfil();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu); // Aquí va el nombre de tu archivo XML de menú
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.cerrar_sesion) {
+            // Cerrar Sesión
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

@@ -66,8 +66,6 @@
             android:focusable="true"/>
     </LinearLayout>
 
-
-
     <!-- Apartado Epic -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardEpic"
