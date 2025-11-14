@@ -8,10 +8,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 
 public class EpicActivity extends AppCompatActivity {
 
@@ -23,7 +24,18 @@ public class EpicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_epic);
 
+        // --- Configurar Toolbar con flecha de regreso ---
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Estado de Epic Games");
+            toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
+        }
+        // --- Inicializar contenedor de servicios ---
         servicesContainer = findViewById(R.id.servicesContainer);
+
+        // --- Hilo para obtener datos JSON de Epic Games ---
         new Thread(() -> {
             String json = ApiFetcher.getJson(URL);
             runOnUiThread(() -> populateServices(json));
@@ -97,5 +109,12 @@ public class EpicActivity extends AppCompatActivity {
                 servicesContainer.addView(createServiceBlock(name, status));
             }
         }
+    }
+
+    // --- Botón de regresar en Toolbar ---
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish(); // cierra la actividad y regresa
+        return true;
     }
 }
