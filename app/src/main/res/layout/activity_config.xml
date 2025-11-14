@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="@drawable/bg_back"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_back">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -18,51 +17,63 @@
             app:titleTextColor="@android:color/white"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Contenido debajo del Toolbar -->
+    <!-- Contenedor vertical principal -->
     <LinearLayout
+        android:id="@+id/mainContainer"
         android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginStart="@dimen/space_16"
         android:layout_marginEnd="@dimen/space_16"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_card"
-        android:padding="16dp"
+        android:gravity="center_horizontal"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Card del contenido -->
+        <LinearLayout
+            android:id="@+id/linearMain"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Configuraciones de la aplicación"
-            android:layout_margin="20dp"
-            android:textSize="18sp"
-            android:layout_gravity="center"/>
+            android:background="@drawable/bg_card"
+            android:padding="16dp">
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchTema"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Modo oscuro"
-            android:layout_marginTop="20dp"/>
-        <Button
-            android:id="@+id/btnEliminarCuenta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Eliminar cuenta"
-            android:textColor="@android:color/white"
-            android:background="@color/red"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Configuraciones de la aplicación"
+                android:layout_margin="20dp"
+                android:textSize="18sp"
+                android:layout_gravity="center"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchTema"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Modo oscuro"
+                android:layout_marginTop="20dp"/>
+
+            <Button
+                android:id="@+id/btnEliminarCuenta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Eliminar cuenta"
+                android:textColor="@android:color/white"
+                android:background="@color/red"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"/>
+        </LinearLayout>
+
+        <!-- Imagen GitHub debajo del LinearLayout, centrada -->
+        <ImageView
+            android:id="@+id/gitHubWeb"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_marginTop="16dp"
+            android:clipToOutline="true"
+            android:contentDescription="Github"
+            android:scaleType="centerCrop"
+            android:src="@drawable/github"/>
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/gitHubWeb"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/github"
-        android:contentDescription="Github"
-        android:layout_gravity="center"
-        android:scaleType="centerCrop"
-        android:clipToOutline="true"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
