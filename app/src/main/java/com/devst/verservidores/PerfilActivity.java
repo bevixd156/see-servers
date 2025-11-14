@@ -20,7 +20,7 @@ public class PerfilActivity extends AppCompatActivity {
 
     private ImageView imgPerfil;
     private TextView txtNombre, txtCorreo, txtFechaRegistro;
-    private Button btnEditarPerfil;
+    private Button btnEditarPerfil, btnCerrarSesion;
     private int userId;
 
     @Override
@@ -33,6 +33,7 @@ public class PerfilActivity extends AppCompatActivity {
         txtCorreo = findViewById(R.id.txtCorreoPerfil);
         txtFechaRegistro = findViewById(R.id.txtFechaRegistro); // 🔹 Nuevo TextView
         btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
+        btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         userId = prefs.getInt("user_id", -1);
@@ -42,6 +43,12 @@ public class PerfilActivity extends AppCompatActivity {
 
         btnEditarPerfil.setOnClickListener(v -> {
             Intent intent = new Intent(PerfilActivity.this, EditarPerfilActivity.class);
+            intent.putExtra("user_id", userId);
+            startActivity(intent);
+        });
+
+        btnCerrarSesion.setOnClickListener(v -> {
+            Intent intent = new Intent(PerfilActivity.this, LoginActivity.class);
             intent.putExtra("user_id", userId);
             startActivity(intent);
         });
