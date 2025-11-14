@@ -3,6 +3,7 @@ package com.devst.verservidores;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -18,6 +19,18 @@ public class ConfigActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_config);
+
+        ImageView gitHubWeb = findViewById(R.id.gitHubWeb);
+
+        // Abre el navegador a la pagina del repositorio de github
+        gitHubWeb.setOnClickListener(v -> {
+            String url = "https://github.com/bevixd156/see-servers";
+            android.content.Intent intent = new android.content.Intent(
+                    android.content.Intent.ACTION_VIEW,
+                    android.net.Uri.parse(url)
+            );
+            startActivity(intent);
+        });
 
         //Configuracion de Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -63,7 +76,15 @@ public class ConfigActivity extends AppCompatActivity {
         Button btnEliminarCuenta = findViewById(R.id.btnEliminarCuenta);
         btnEliminarCuenta.setOnClickListener(v -> mostrarDialogoEliminarCuenta());
 
+        gitHubWeb = findViewById(R.id.gitHubWeb);
+
+        gitHubWeb.setOnClickListener(v -> {
+            String url = "https://github.com/bevixd156/see-servers";
+            android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url));
+            startActivity(intent);
+        });
     }
+
 
     //Diálogo para eliminar la cuenta
     private void mostrarDialogoEliminarCuenta() {
