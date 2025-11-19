@@ -38,7 +38,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true">
-
+        <!--Contenedor de servicios-->
         <LinearLayout
             android:id="@+id/servicesContainer"
             android:orientation="vertical"
@@ -74,6 +74,7 @@
         android:layout_marginStart="@dimen/space_16"
         android:layout_marginEnd="@dimen/space_16">
 
+        <!--Contenedor de comentarios-->
         <LinearLayout
             android:id="@+id/commentsContainer"
             android:orientation="vertical"
@@ -95,6 +96,7 @@
         android:layout_marginStart="@dimen/space_16"
         android:layout_marginEnd="@dimen/space_16">
 
+        <!--Apartado para escribir comentarios-->
         <EditText
             android:id="@+id/edtNewComment"
             android:layout_width="0dp"
@@ -106,6 +108,7 @@
             android:textColor="?android:textColorPrimary"
             android:textColorHint="?android:textColorHint"/>
 
+        <!--Boton para enviar comentarios-->
         <Button
             android:id="@+id/btnSendComment"
             android:layout_width="wrap_content"
