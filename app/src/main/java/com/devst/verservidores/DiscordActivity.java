@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -123,6 +124,7 @@ public class DiscordActivity extends AppCompatActivity {
         }
     }
 
+    //Caja para contener los distintos servicios en operacion
     private LinearLayout createServiceBlock(String name, String status) {
         LinearLayout block = new LinearLayout(this);
         block.setOrientation(LinearLayout.HORIZONTAL);
@@ -169,6 +171,7 @@ public class DiscordActivity extends AppCompatActivity {
 
         return block;
     }
+
 
     private void loadComments() {
         commentsContainer.removeAllViews();
@@ -242,6 +245,64 @@ public class DiscordActivity extends AppCompatActivity {
         commentBlock.addView(textContainer);
 
         commentsContainer.addView(commentBlock);
+
+        // Mantener presionado para mostrar menú (solo si el comentario pertenece al usuario actual)
+        if (useridDelComentario == currentUserId) {
+            commentBlock.setOnLongClickListener(v -> {
+
+                PopupMenu popup = new PopupMenu(this, v);
+                popup.getMenu().add("Modificar");
+                popup.getMenu().add("Eliminar");
+
+                popup.setOnMenuItemClickListener(item -> {
+
+                    if (item.getTitle().equals("Modificar")) {
+                        showEditDialog(useridDelComentario, message);
+                    }
+
+                    if (item.getTitle().equals("Eliminar")) {
+                        deleteCommentAndReload(useridDelComentario, message);
+                    }
+
+                    return true;
+                });
+
+                popup.show();
+
+                return true;
+            });
+        }
+    }
+
+    private void showEditDialog(int userId, String oldText) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("Modificar comentario");
+
+        final EditText input = new EditText(this);
+        input.setText(oldText);
+        builder.setView(input);
+
+        builder.setPositiveButton("Guardar", (dialog, which) -> {
+            String newText = input.getText().toString();
+
+            dbHelper.getWritableDatabase().execSQL(
+                    "UPDATE comentarios SET comentario = ? WHERE user_id = ? AND comentario = ?",
+                    new Object[]{newText, userId, oldText}
+            );
+
+            loadComments();
+        });
+
+        builder.setNegativeButton("Cancelar", null);
+        builder.show();
+    }
+
+    private void deleteCommentAndReload(int userId, String message) {
+        dbHelper.getWritableDatabase().execSQL(
+                "DELETE FROM comentarios WHERE user_id = ? AND comentario = ?",
+                new Object[]{userId, message}
+        );
+        loadComments();
     }
 
     @Override

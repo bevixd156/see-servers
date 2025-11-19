@@ -61,7 +61,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
     public Cursor getComments(String tipo) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery(
-                "SELECT c.user_id, c.comentario, c.fecha, u.nombre, u.foto_perfil " +
+                "SELECT c.id, c.user_id, c.comentario, c.fecha, u.nombre, u.foto_perfil " +
                         "FROM comentarios c " +
                         "INNER JOIN usuarios u ON c.user_id = u.id " +
                         "WHERE c.tipo = ? " +
@@ -70,12 +70,16 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         );
     }
 
-    public Cursor getPublicUserById(int userId){
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery(
-                "SELECT nombre, fecha_registro, foto_perfil FROM usuarios WHERE id = ?",
-                new String[]{String.valueOf(userId)}
-        );
+
+    public void updateComment(int id, String nuevoComentario) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE comentarios SET comentario = ? WHERE id = ?", new Object[]{nuevoComentario, id});
+        db.close();
+    }
+    public void deleteComment(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM comentarios WHERE id = ?", new Object[]{id});
+        db.close();
     }
 
     @Override

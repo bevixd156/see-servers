@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_back">
 
+    <!-- Toolbar con flecha atrás -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
@@ -16,77 +17,101 @@
             android:layout_height="match_parent"
             android:background="?attr/colorPrimary"
             app:titleTextColor="@android:color/white"/>
-
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Título superior -->
+    <!-- Título -->
     <TextView
-        android:id="@+id/tvTitle"
+        android:id="@+id/titleEpic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Estado de Epic Games"
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:textColor="@color/black"
-        android:paddingBottom="16dp"
-        android:paddingTop="16dp"/>
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"/>
 
-    <!-- Scrollable container de servicios -->
+    <!-- Scroll de servicios -->
     <ScrollView
+        android:id="@+id/scrollEpic"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/servicesContainer"
             android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/bg_card"
             android:layout_marginStart="@dimen/space_16"
             android:layout_marginEnd="@dimen/space_16"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- Cada servicio -->
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/tvEpic"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Cargando..."
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
-
-                <View
-                    android:id="@+id/statusCircle"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/circle_gray"/>
-            </LinearLayout>
-
-            <!-- Aquí se agregarán más filas dinámicamente desde EpicActivity -->
+            <!-- Bloques se agregan dinámicamente desde EpicActivity -->
         </LinearLayout>
     </ScrollView>
 
-    <!-- Caja fija de comentarios -->
-    <LinearLayout
-        android:id="@+id/commentsContainer"
-        android:orientation="vertical"
+    <!-- Título comentarios -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Comentarios"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:layout_marginStart="@dimen/space_16"
+        android:layout_marginEnd="@dimen/space_16"/>
+
+    <!-- Scroll de comentarios -->
+    <ScrollView
+        android:id="@+id/scrollComments"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@drawable/bg_card"
-        android:padding="12dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"/>
-        <!-- Aquí se agregarán comentarios dinámicamente -->
+        android:fillViewport="true"
+        android:layout_marginStart="@dimen/space_16"
+        android:layout_marginEnd="@dimen/space_16">
+
+        <LinearLayout
+            android:id="@+id/commentsContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:background="@drawable/bg_card">
+            <!-- Comentarios dinámicos -->
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Caja para escribir comentario -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:layout_marginStart="@dimen/space_16"
+        android:layout_marginEnd="@dimen/space_16">
+
+        <EditText
+            android:id="@+id/edtNewComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Escribe un comentario"
+            android:background="@drawable/bg_card"
+            android:padding="12dp"
+            android:textColor="?android:textColorPrimary"
+            android:textColorHint="?android:textColorHint"/>
+
+        <Button
+            android:id="@+id/btnSendComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enviar"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
 </LinearLayout>
