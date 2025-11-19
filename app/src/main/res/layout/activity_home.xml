@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Estado de los servidores"
-            android:textColor="@color/text_main1"
+            android:textColor="@color/background_main1"
             android:textSize="22sp"
             android:textStyle="bold" />
 
