@@ -26,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Estado de Epic Games"
+        android:textColor="@color/text_main1"
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"

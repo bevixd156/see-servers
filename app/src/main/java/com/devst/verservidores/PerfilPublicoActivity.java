@@ -1,11 +1,9 @@
 package com.devst.verservidores;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -66,15 +64,6 @@ public class PerfilPublicoActivity extends AppCompatActivity {
             } else {
                 ivProfile.setImageResource(R.drawable.user);
             }
-
-            // Click sobre la imagen
-            ivProfile.setOnClickListener(v -> {
-                Toast.makeText(this, "Imagen de perfil tocada", Toast.LENGTH_SHORT).show();
-                // Si quieres abrir otro perfil, asegúrate de pasar su userId
-                Intent intent = new Intent(this, PerfilPublicoActivity.class);
-                intent.putExtra("user_id", userId);
-                startActivity(intent);
-            });
 
             cursor.close();
         }

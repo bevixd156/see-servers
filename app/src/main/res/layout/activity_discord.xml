@@ -29,6 +29,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
+        android:textColor="@color/text_main1"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"/>
 

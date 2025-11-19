@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Colores para modo OSCURO -->
-    <color name="text_main1">#FFFFFF</color> <!-- texto blanco -->
+    <color name="text_main1">#000000</color> <!-- texto blanco -->
     <color name="brand_primary1">#BB86FC</color> <!-- morado claro -->
     <color name="on_primary1">#000000</color> <!-- texto sobre fondo claro -->
     <color name="background_main1">#121212</color> <!-- fondo oscuro -->

@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:text="Registrado el: --/--/----"
                 android:textSize="16sp"
-                android:textColor="@color/text_main1" />
+                android:enabled="false" />
 
             <Button
                 android:id="@+id/btnEditarPerfil"
