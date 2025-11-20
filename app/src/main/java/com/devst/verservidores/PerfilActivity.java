@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 
@@ -34,6 +35,18 @@ public class PerfilActivity extends AppCompatActivity {
         txtFechaRegistro = findViewById(R.id.txtFechaRegistro); // 🔹 Nuevo TextView
         btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        //Función flecha atras
+        if (toolbar != null && getSupportActionBar() != null) {
+            // Activar flecha "Atrás"
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            // Título del activity
+            getSupportActionBar().setTitle("Ajustes");
+            // Color blanco para la flecha
+            toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
+        }
 
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         userId = prefs.getInt("user_id", -1);
@@ -81,6 +94,14 @@ public class PerfilActivity extends AppCompatActivity {
 
         cursor.close();
         db.close();
+    }
+
+    //Acción botón "Atrás"
+    @Override
+    public boolean onSupportNavigateUp(){
+        //Cerrar la actividad y retorna atrás
+        finish();
+        return true;
     }
 
     @Override

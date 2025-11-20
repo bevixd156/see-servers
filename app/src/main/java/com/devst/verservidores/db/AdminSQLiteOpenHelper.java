@@ -1,5 +1,5 @@
 package com.devst.verservidores.db;
-
+//Importamos librerias necesarias
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -68,18 +68,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                         "ORDER BY c.id ASC",
                 new String[]{tipo}
         );
-    }
-
-
-    public void updateComment(int id, String nuevoComentario) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("UPDATE comentarios SET comentario = ? WHERE id = ?", new Object[]{nuevoComentario, id});
-        db.close();
-    }
-    public void deleteComment(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM comentarios WHERE id = ?", new Object[]{id});
-        db.close();
     }
 
     @Override
