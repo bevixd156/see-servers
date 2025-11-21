@@ -1,30 +1,31 @@
 package com.devst.verservidores;
+
+// Clase modelo para sincronizar con Firebase Realtime Database
 public class Comentario {
-    public int id; // ID del comentario en SQLite
-    public int userId;
-    public String username;
-    public String mensaje;
-    public String timestamp;
-    public String fotoPerfil;
+    private int userId;
+    private String texto;
+    private String tipo; // "epic" o "discord"
+    private long timestamp; // Usaremos long (milisegundos) para facilitar el ordenamiento y sincronización con SQLite
 
-    // ** CORRECCIÓN: Constructor vacío requerido por Firebase **
-    public Comentario() {}
+    public Comentario() {} // Requerido por Firebase para deserializar
 
-    public Comentario(int id, int userId, String username, String mensaje, String timestamp, String fotoPerfil) {
-        this.id = id;
+    public Comentario(int userId, String texto, String tipo, long timestamp) {
         this.userId = userId;
-        this.username = username;
-        this.mensaje = mensaje;
+        this.texto = texto;
+        this.tipo = tipo;
         this.timestamp = timestamp;
-        this.fotoPerfil = fotoPerfil;
     }
 
-    // Constructor simplificado para nuevo comentario antes de insertar en SQLite
-    public Comentario(int userId, String username, String mensaje, String timestamp, String fotoPerfil) {
-        this.userId = userId;
-        this.username = username;
-        this.mensaje = mensaje;
-        this.timestamp = timestamp;
-        this.fotoPerfil = fotoPerfil;
-    }
+    // Getters y Setters requeridos por Firebase
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
+
+    public String getTexto() { return texto; }
+    public void setTexto(String texto) { this.texto = texto; }
+
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
+
+    public long getTimestamp() { return timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 }

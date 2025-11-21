@@ -17,18 +17,35 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Verservidores">
 
-        <activity android:name=".PerfilPublicoActivity" />
-        <activity android:name=".EditarPerfilActivity" />
-        <activity android:name=".PerfilActivity" />
-        <activity android:name=".DiscordActivity"/>
-        <activity android:name=".EpicActivity" />
-        <activity android:name=".ConfigActivity" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".RegistroActivity" />
+        <activity android:name=".PerfilPublicoActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".EditarPerfilActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".PerfilActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".DiscordActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".EpicActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ConfigActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".HomeActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".RegistroActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
 
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -21,6 +21,10 @@ import com.bumptech.glide.Glide;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class ComentarioManager {
     private final Context context;
     private final LinearLayout commentsContainer;
@@ -61,19 +65,23 @@ public class ComentarioManager {
                 String fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha"));
                 String foto = cursor.getString(cursor.getColumnIndexOrThrow("foto_perfil"));
 
-                Comentario comentario = new Comentario(id, userId, username, mensaje, fecha, foto);
+                // ⬅️ CORRECCIÓN: Se crea un objeto auxiliar para la vista que tiene más campos que la versión de Firebase.
+                ComentarioViewData comentario = new ComentarioViewData(id, userId, username, mensaje, fecha, foto);
                 addCommentView(comentario, tipoServicio);
 
             } while (cursor.moveToNext());
 
             cursor.close();
+            // Asegurarse de ir al final después de la carga
+            scrollToBottom();
         }
     }
 
     // ===========================
     // Crear vista de comentario
     // ===========================
-    private void addCommentView(Comentario c, String tipoServicio) {
+    // ⬅️ CORRECCIÓN: El argumento se cambia al nuevo objeto auxiliar ComentarioViewData
+    private void addCommentView(ComentarioViewData c, String tipoServicio) {
         LinearLayout block = new LinearLayout(context);
         block.setOrientation(LinearLayout.HORIZONTAL);
         block.setPadding(8, 8, 8, 8);
@@ -111,7 +119,8 @@ public class ComentarioManager {
         tvMsg.setTextSize(16);
 
         TextView tvFecha = new TextView(context);
-        tvFecha.setText(c.timestamp);
+        // ⬅️ CORRECCIÓN: La fecha se llama 'fecha' en el objeto auxiliar
+        tvFecha.setText(c.fecha);
         tvFecha.setTextSize(12);
         tvFecha.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
 
@@ -150,29 +159,40 @@ public class ComentarioManager {
     // Enviar comentario (CREATE)
     // ===========================
     public void enviarComentario(String tipoServicio, String texto) {
-        if (texto == null || texto.trim().isEmpty()) return;
-        String msg = texto.trim();
-        String timestamp = java.text.DateFormat.getDateTimeInstance().format(new java.util.Date());
+        if (texto.isEmpty()) return;
 
-        Comentario comentario = new Comentario(currentUserId, "NombreUsuario", msg, timestamp, "");
+        // 1. Obtener datos y timestamp
+        long timestampMs = System.currentTimeMillis();
+        String fechaFormateada = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date(timestampMs));
 
-        // 1. Guardar en SQLite y obtener el ID generado
-        long idComentario = dbHelper.insertComment(currentUserId, msg, tipoServicio, timestamp);
+        // 2. Insertar en SQLite y obtener el ID
+        long idComentario = dbHelper.insertComment(currentUserId, texto, tipoServicio, fechaFormateada);
 
-        // 2. Asignar el ID de SQLite al modelo de Firebase
-        comentario.id = (int) idComentario;
+        if (idComentario > 0) {
+            // 3. Crear el objeto Comentario compatible con Firebase (solo los 4 campos)
+            // ⬅️ CORRECCIÓN: El constructor de Comentario solo lleva 4 campos (userId, texto, tipo, timestamp)
+            Comentario comentarioRTDB = new Comentario(
+                    currentUserId,
+                    texto,
+                    tipoServicio,
+                    timestampMs
+            );
 
-        // 3. LLAMADA A FIREBASE (Usando el ID como clave para la sincronización)
-        firebaseRepo.agregarComentario(tipoServicio, (int) idComentario, comentario);
+            // 4. Enviar a Firebase Realtime Database
+            firebaseRepo.agregarComentario(tipoServicio, (int) idComentario, comentarioRTDB);
 
-        loadComments(tipoServicio);
-        scrollToBottom();
+            // 5. Recargar y hacer scroll
+            loadComments(tipoServicio);
+        } else {
+            Toast.makeText(context, "Error al guardar comentario localmente.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // ===========================
     // Editar comentario
     // ===========================
-    private void showEditDialog(Comentario c, String tipoServicio) {
+    // ⬅️ CORRECCIÓN: El argumento del diálogo se cambia al nuevo objeto auxiliar ComentarioViewData
+    private void showEditDialog(ComentarioViewData c, String tipoServicio) {
         // 1. Declarar e inicializar el Builder y el Input
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Editar Comentario");
@@ -192,38 +212,59 @@ public class ComentarioManager {
         // 2. Definir el comportamiento del botón "Guardar"
         builder.setPositiveButton("Guardar", (dialog, which) -> {
             String nuevo = input.getText().toString().trim();
-            if (nuevo.isEmpty()) { /* ... */ }
+            if (nuevo.isEmpty()) {
+                Toast.makeText(context, "El comentario no puede estar vacío", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            // ** CORRECCIÓN: Usar c.id para UPDATE en SQLite **
+            // Generar nuevo timestamp y fecha
+            long nuevoTimestampMs = System.currentTimeMillis();
+            String nuevaFecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date(nuevoTimestampMs));
+
+            // ** 2.1. UPDATE en SQLite **
             dbHelper.getWritableDatabase().execSQL(
-                    "UPDATE comentarios SET comentario = ? WHERE id = ?",
-                    new Object[]{nuevo, c.id}
+                    "UPDATE comentarios SET comentario = ?, fecha = ? WHERE id = ?",
+                    new Object[]{nuevo, nuevaFecha, c.id} // ⬅️ CORRECCIÓN: Actualizar la fecha/timestamp también
             );
 
-            // Actualizar Firebase usando c.id
-            firebaseRepo.actualizarComentario(tipoServicio, c.id,
-                    new Comentario(c.id, c.userId, c.username, nuevo, c.timestamp, c.fotoPerfil)
+            // ** 2.2. Actualizar Firebase **
+            Comentario comentarioRTDB = new Comentario(
+                    c.userId,
+                    nuevo,
+                    tipoServicio,
+                    nuevoTimestampMs // Usamos el nuevo long timestamp
             );
-            // ... [TOAST Y RECARGA] ...
+
+            firebaseRepo.actualizarComentario(tipoServicio, c.id, comentarioRTDB);
+
+            Toast.makeText(context, "Comentario actualizado", Toast.LENGTH_SHORT).show();
+            loadComments(tipoServicio);
         });
-        // ...
+        builder.setNegativeButton("Cancelar", null);
+        builder.show();
     }
 
     // ===========================
     // Eliminar comentario
     // ===========================
-    private void deleteComment(Comentario c, String tipoServicio) {
-        // ** CORRECCIÓN: Usar c.id para DELETE en SQLite **
-        dbHelper.getWritableDatabase().execSQL(
-                "DELETE FROM comentarios WHERE id = ?",
-                new Object[]{c.id}
+    // ⬅️ CORRECCIÓN: El argumento se cambia al nuevo objeto auxiliar ComentarioViewData
+    private void deleteComment(ComentarioViewData c, String tipoServicio) {
+        // 1. ** DELETE en SQLite **
+        int rowsDeleted = dbHelper.getWritableDatabase().delete(
+                "comentarios",
+                "id = ?",
+                new String[]{String.valueOf(c.id)}
         );
 
-        // Eliminar en Firebase usando c.id
-        firebaseRepo.eliminarComentario(tipoServicio, c.id);
+        if (rowsDeleted > 0) {
+            // 2. Eliminar en Firebase usando c.id
+            firebaseRepo.eliminarComentario(tipoServicio, c.id);
+            Toast.makeText(context, "Comentario eliminado", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Error al eliminar comentario local", Toast.LENGTH_SHORT).show();
+        }
 
         loadComments(tipoServicio);
-        scrollToBottom();
     }
 
     // ===========================

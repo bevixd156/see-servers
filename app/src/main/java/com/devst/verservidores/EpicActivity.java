@@ -2,39 +2,47 @@ package com.devst.verservidores;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
 import androidx.appcompat.widget.Toolbar;
-
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
+// Importaciones de Realtime Database eliminadas o ignoradas
+// Importaciones de Firestore añadidas:
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class EpicActivity extends AppCompatActivity {
-
     private LinearLayout servicesContainer, commentsContainer;
     private ComentarioManager comentarioManager;
-
     private AdminSQLiteOpenHelper dbHelper;
-
+    private FirebaseRepositorio firebaseRepo;
     private int currentUserId;
     private static final String TIPO_SERVICIO = "epic";
     private static final String URL = "https://status.epicgames.com/api/v2/summary.json";
+    private static final String TAG = "EpicActivity";
+
+    // Variables de Firestore AÑADIDAS:
+    private ListenerRegistration firestoreRegistration;
+    private Query firestoreQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_epic);
+
+        firebaseRepo = new FirebaseRepositorio();
+        dbHelper = new AdminSQLiteOpenHelper(this); // Inicialización movida aquí para claridad
 
         // Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -50,10 +58,6 @@ public class EpicActivity extends AppCompatActivity {
         servicesContainer = findViewById(R.id.servicesContainer);
         commentsContainer = findViewById(R.id.commentsContainer);
 
-        ScrollView scroll = findViewById(R.id.scrollEpic);
-
-        dbHelper = new AdminSQLiteOpenHelper(this);
-
         // Obtener usuario logueado
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         currentUserId = prefs.getInt("user_id", -1);
@@ -62,9 +66,7 @@ public class EpicActivity extends AppCompatActivity {
             return;
         }
 
-        // Crear instancia de FirebaseRepositorio
-        FirebaseRepositorio firebaseRepo = new FirebaseRepositorio();
-
+        // Creación del ComentarioManager
         comentarioManager = new ComentarioManager(
                 this,
                 commentsContainer,
@@ -80,18 +82,54 @@ public class EpicActivity extends AppCompatActivity {
         // Botón enviar comentario
         findViewById(R.id.btnSendComment).setOnClickListener(v -> {
             String texto = edtNewComment.getText().toString().trim();
-            comentarioManager.enviarComentario(TIPO_SERVICIO, texto);
-            edtNewComment.setText(""); // limpiar campo
+            if (!texto.isEmpty()) {
+                comentarioManager.enviarComentario(TIPO_SERVICIO, texto);
+                edtNewComment.setText("");
+            }
         });
 
         // Cargar servicios y comentarios
         loadEpicStatus();
+
         comentarioManager.loadComments(TIPO_SERVICIO);
+
+        // INICIAR ESCUCHA DE FIRESTORE
+        startFirebaseListener(TIPO_SERVICIO);
     }
 
     // ===========================
-    // CARGAR ESTADO DEL SERVICIO
+    // METODO PARA INICIAR LA ESCUCHA DE FIRESTORE
     // ===========================
+    private void startFirebaseListener(String tipoServicio) {
+        // 1. Obtener la referencia de la consulta de Firestore
+        firestoreQuery = firebaseRepo.getComentariosQuery(tipoServicio);
+
+        // 2. Adjuntar el Snapshot Listener (Escucha en tiempo real)
+        firestoreRegistration = firestoreQuery.addSnapshotListener((snapshots, error) -> {
+            if (error != null) {
+                Log.w(TAG, "Error de escucha en Firestore:", error);
+                return;
+            }
+
+            // Se ejecuta cada vez que hay un cambio.
+            Log.d(TAG, "Cambios detectados en Firestore, recargando UI.");
+
+            // La misma llamada para recargar los comentarios de SQLite
+            comentarioManager.loadComments(tipoServicio);
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // LIMPIEZA CRUCIAL: Detener el listener de Firestore
+        if (firestoreRegistration != null) {
+            firestoreRegistration.remove();
+            Log.d(TAG, "Listener de Firestore desconectado.");
+        }
+    }
+
+    // CARGAR ESTADO DEL SERVICIO (Mantenido)
     private void loadEpicStatus() {
         new Thread(() -> {
             String json = ApiFetcher.getJson(URL);
@@ -118,7 +156,7 @@ public class EpicActivity extends AppCompatActivity {
         }
     }
 
-    // Crear blocks visuales
+    // Crear blocks visuales (Mantenido)
     private LinearLayout createServiceBlock(String name, String status) {
         LinearLayout block = new LinearLayout(this);
         block.setOrientation(LinearLayout.HORIZONTAL);

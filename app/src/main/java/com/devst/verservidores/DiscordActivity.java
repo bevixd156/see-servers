@@ -1,7 +1,9 @@
 package com.devst.verservidores;
 //Librerias necesarias
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -9,72 +11,73 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.text.DateFormat;
-import java.util.Date;
+
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 
 public class DiscordActivity extends AppCompatActivity {
     //Implementamos Objetos
-    // Contenedor donde se agregan los comentarios cargados
     private LinearLayout commentsContainer;
-    // Campo para escribir un nuevo comentario
     private EditText edtNewComment;
-    //Referencia a la clase ComentarioManager
     private ComentarioManager comentarioManager;
-    // Botón de enviar comentario
     private Button btnSendComment;
     private FirebaseRepositorio firebaseRepo;
-    // Acceso a la base de datos SQLite
     private AdminSQLiteOpenHelper dbHelper;
-    // ID del usuario logueado (se obtiene desde SharedPreferences)
-    private int currentUserId; // Id del usuario actual (simulado)
-    // Tipo de servicio para filtrar comentarios (Discord)
+    private int currentUserId;
     private static final String TIPO_SERVICIO = "discord";
+    private static final String TAG = "DiscordActivity";
+    private ListenerRegistration firestoreRegistration; // El objeto para desconectar el listener
+    private Query firestoreQuery; // La referencia de la consulta
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // La inicialización del repositorio y la base de datos se mueve al inicio.
+        dbHelper = new AdminSQLiteOpenHelper(this);
         firebaseRepo = new FirebaseRepositorio();
+
         setContentView(R.layout.activity_discord);
 
-        //Configuración del Toolbar
+        // Configuración del Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            // Flecha atrás
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            // Título
             getSupportActionBar().setTitle("Estado de Discord");
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
         }
 
-        //Referencias a las vistas
+        // Referencias a las vistas
         commentsContainer = findViewById(R.id.commentsContainer);
         edtNewComment = findViewById(R.id.edtNewComment);
         btnSendComment = findViewById(R.id.btnSendComment);
+        ScrollView scroll = findViewById(R.id.scrollComments);
 
-        dbHelper = new AdminSQLiteOpenHelper(this);
 
         // Obtener usuario logueado desde SharedPreferences
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
-        currentUserId = prefs.getInt("user_id", -1); // -1 si no hay usuario logueado
+        currentUserId = prefs.getInt("user_id", -1);
+
         // Si no hay usuario logueado → cerrar actividad
         if(currentUserId == -1){
             finish();
             return;
         }
-        // Crear ComentarioManager DESPUÉS de tener el id del usuario
-        ScrollView scroll = findViewById(R.id.scrollComments);
 
-        // Inicializar FirebaseRepositorio
-        firebaseRepo = new FirebaseRepositorio();
+        // ✅ ÚNICA Y CORRECTA INICIALIZACIÓN DEL ComentarioManager
         comentarioManager = new ComentarioManager(
                 this,
                 commentsContainer,
@@ -84,24 +87,56 @@ public class DiscordActivity extends AppCompatActivity {
                 currentUserId
         );
 
-        // Cargar servicios del estado oficial de Discord a traves del endpoint
+        // Cargar servicios del estado oficial de Discord
         loadDiscordServices();
 
-        comentarioManager.loadComments(TIPO_SERVICIO); // cargar comentarios existentes de la base de datos
+        // Cargar comentarios existentes de la base de datos local
+        comentarioManager.loadComments(TIPO_SERVICIO);
 
-        //Función boton enviar comentarios
-        //Función boton enviar comentarios
+        // ✅ INICIAR ESCUCHA DE FIREBASE AHORA
+        startFirebaseListener(TIPO_SERVICIO);
+
+        // Función boton enviar comentarios
         btnSendComment.setOnClickListener(v -> {
             String message = edtNewComment.getText().toString().trim();
             if (!message.isEmpty()) {
-
-                // ** IMPLEMENTACIÓN FIREBASE: El Manager lo hace todo **
                 comentarioManager.enviarComentario(TIPO_SERVICIO, message);
-
-                // Limpiar EditText
                 edtNewComment.setText("");
             }
         });
+    }
+
+    // ===========================
+    // ✅ METODO PARA INICIAR LA ESCUCHA DE FIREBASE
+    // ===========================
+    // Este metodo usa el Listener de Firestore para obtener actualizaciones en tiempo real
+    private void startFirebaseListener(String tipoServicio) {
+        // 1. Obtener la referencia de la consulta de Firestore
+        firestoreQuery = firebaseRepo.getComentariosQuery(tipoServicio);
+
+        // 2. Adjuntar el Snapshot Listener (Escucha en tiempo real)
+        firestoreRegistration = firestoreQuery.addSnapshotListener((snapshots, error) -> {
+            if (error != null) {
+                Log.w(TAG, "Error de escucha en Firestore:", error);
+                return;
+            }
+
+            // Se ejecuta cada vez que hay un cambio.
+            Log.d(TAG, "Cambios detectados en Firestore, recargando UI.");
+
+            // La misma llamada para recargar los comentarios de SQLite (que se actualizan con la app)
+            comentarioManager.loadComments(tipoServicio);
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // ❌ LIMPIEZA CRUCIAL: Detener el listener de Firestore
+        if (firestoreRegistration != null) {
+            firestoreRegistration.remove();
+            Log.d(TAG, "Listener de Firestore desconectado.");
+        }
     }
 
     //Obtener el estado del servidor de Discord
