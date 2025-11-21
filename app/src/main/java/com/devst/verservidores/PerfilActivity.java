@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -32,25 +33,27 @@ public class PerfilActivity extends AppCompatActivity {
         imgPerfil = findViewById(R.id.imgPerfil);
         txtNombre = findViewById(R.id.txtNombrePerfil);
         txtCorreo = findViewById(R.id.txtCorreoPerfil);
-        txtFechaRegistro = findViewById(R.id.txtFechaRegistro); // 🔹 Nuevo TextView
+        txtFechaRegistro = findViewById(R.id.txtFechaRegistro);
         btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Función flecha atras
+        // Configuración del Toolbar (mantener código original)
         if (toolbar != null && getSupportActionBar() != null) {
-            // Activar flecha "Atrás"
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            // Título del activity
-            getSupportActionBar().setTitle("Ajustes");
-            // Color blanco para la flecha
+            getSupportActionBar().setTitle("Mi Perfil"); // Título más apropiado
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
         }
 
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         userId = prefs.getInt("user_id", -1);
-        if (userId == -1) return;
+        if (userId == -1) {
+            // Si no hay sesión, redirigir al Login y terminar.
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
 
         cargarDatosUsuario(userId);
 
@@ -60,10 +63,19 @@ public class PerfilActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Lógica de CERRAR SESIÓN (CORREGIDA)
         btnCerrarSesion.setOnClickListener(v -> {
+            // 1. Limpiar SharedPreferences para eliminar la sesión
+            prefs.edit().clear().apply();
+
+            Toast.makeText(PerfilActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+
+            // 2. Redirigir a LoginActivity y limpiar la pila de actividades
             Intent intent = new Intent(PerfilActivity.this, LoginActivity.class);
-            intent.putExtra("user_id", userId);
+            // Flags para evitar que el usuario vuelva a Home/Perfil con el botón de retroceso
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            finish();
         });
     }
 
@@ -85,9 +97,20 @@ public class PerfilActivity extends AppCompatActivity {
 
             String foto = cursor.getString(2);
             if (foto != null && !foto.isEmpty()) {
-                File file = new File(Uri.parse(foto).getPath());
-                if (file.exists()) {
-                    imgPerfil.setImageURI(Uri.fromFile(file));
+                // Se puede simplificar a Uri.parse(foto)
+                try {
+                    Uri fotoUri = Uri.parse(foto);
+                    // El File check es importante para URIs de archivo internas
+                    File file = new File(fotoUri.getPath());
+                    if (file.exists()) {
+                        imgPerfil.setImageURI(fotoUri);
+                    } else {
+                        // Si el archivo no existe (error de ruta), vuelve al default
+                        imgPerfil.setImageResource(R.drawable.user);
+                    }
+                } catch (Exception e) {
+                    // Si el parseo falla
+                    imgPerfil.setImageResource(R.drawable.user);
                 }
             }
         }
@@ -96,10 +119,9 @@ public class PerfilActivity extends AppCompatActivity {
         db.close();
     }
 
-    //Acción botón "Atrás"
+    // Acción botón "Atrás" (MANTENER CÓDIGO ORIGINAL)
     @Override
     public boolean onSupportNavigateUp(){
-        //Cerrar la actividad y retorna atrás
         finish();
         return true;
     }
@@ -107,6 +129,9 @@ public class PerfilActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        cargarDatosUsuario(userId);
+        // Cargar datos del usuario cada vez que la actividad vuelve al frente
+        if (userId != -1) {
+            cargarDatosUsuario(userId);
+        }
     }
 }

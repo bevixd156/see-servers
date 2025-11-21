@@ -14,6 +14,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
+import com.devst.verservidores.repositorio.FirebaseRepositorio;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,25 +49,25 @@ public class RegistroActivity extends AppCompatActivity {
         String pass1 = edtPass.getText().toString().trim();
         String pass2 = edtPass2.getText().toString().trim();
 
-        // 🔹 Validaciones básicas
+        //Validaciones básicas
         if (nombre.isEmpty() || correo.isEmpty() || pass1.isEmpty() || pass2.isEmpty()) {
             Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 🔹 Validar formato de correo
+        //Validar formato de correo
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
             Toast.makeText(this, "Correo no válido", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 🔹 Validar longitud de contraseña
+        //Validar longitud de contraseña
         if (pass1.length() < 6) {
             Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 🔹 Validar coincidencia de contraseñas
+        // Validar coincidencia de contraseñas
         if (!pass1.equals(pass2)) {
             Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
             return;
@@ -75,7 +76,7 @@ public class RegistroActivity extends AppCompatActivity {
         AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
         SQLiteDatabase db = admin.getWritableDatabase();
 
-        // 🔹 Comprobar si ya existe el correo
+        // Comprobar si ya existe el correo
         Cursor cursor = db.rawQuery("SELECT id FROM usuarios WHERE correo = ?", new String[]{correo});
         if (cursor.moveToFirst()) {
             Toast.makeText(this, "El correo ya está registrado", Toast.LENGTH_SHORT).show();
@@ -85,11 +86,11 @@ public class RegistroActivity extends AppCompatActivity {
         }
         cursor.close();
 
-        // 🔹 Generar fecha de registro legible
+        // Generar fecha de registro legible
         String fechaRegistro = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 .format(new Date());
 
-        // 🔹 Insertar usuario
+        // Insertar usuario
         ContentValues values = new ContentValues();
         values.put("nombre", nombre);
         values.put("correo", correo);
@@ -101,6 +102,11 @@ public class RegistroActivity extends AppCompatActivity {
         db.close();
 
         if (resultado > 0) {
+            // Crear objeto Usuario para Firebase
+            Usuario usuario = new Usuario(nombre, correo, fechaRegistro, "");
+            FirebaseRepositorio firebaseRepo = new FirebaseRepositorio();
+            firebaseRepo.agregarUsuario((int) resultado, usuario); // <- usar agregarUsuario y el ID generado
+
             Toast.makeText(this, "Cuenta creada con éxito", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LoginActivity.class));
             finish();

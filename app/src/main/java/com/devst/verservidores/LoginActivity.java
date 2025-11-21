@@ -14,6 +14,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
+import com.google.firebase.FirebaseApp;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -26,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_login);
 
         adminDB = new AdminSQLiteOpenHelper(this);

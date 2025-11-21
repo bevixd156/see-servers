@@ -1,5 +1,6 @@
 package com.devst.verservidores.db;
 //Importamos librerias necesarias
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -50,12 +51,17 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     // Insertar un comentario
-    public void insertComment(int userId, String comentario, String tipo, String fecha) {
+    public long insertComment(int userId, String mensaje, String tipo, String fecha) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String sql = "INSERT INTO comentarios (user_id, comentario, tipo, fecha) VALUES (?, ?, ?, ?)";
-        db.execSQL(sql, new Object[]{userId, comentario, tipo, fecha});
-        db.close();
+        ContentValues values = new ContentValues();
+        values.put("user_id", userId);
+        values.put("comentario", mensaje);
+        values.put("tipo", tipo);
+        values.put("fecha", fecha);
+
+        return db.insert("comentarios", null, values);
     }
+
 
     // Obtener comentarios de un tipo específico (ej: "discord")
     public Cursor getComments(String tipo) {
