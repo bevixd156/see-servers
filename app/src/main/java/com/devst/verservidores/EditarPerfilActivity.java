@@ -27,7 +27,6 @@ import java.io.OutputStream;
 
 public class EditarPerfilActivity extends AppCompatActivity {
     // ... [Mantener la declaración de objetos] ...
-
     private EditText edtNombre, edtCorreo;
     private ImageView imgPerfil;
     private Button btnGuardar;
@@ -171,15 +170,15 @@ public class EditarPerfilActivity extends AppCompatActivity {
 
     // Funcion Guardar Imagen en la memoria interna de la app (MANTENER CÓDIGO ORIGINAL)
     private Uri guardarImagenInterna(Uri sourceUri, int userId) {
-        // ...
+        //
         try (InputStream in = getContentResolver().openInputStream(sourceUri)) {
-            // ...
+            //
             File dir = new File(getFilesDir(), "perfil");
-            // ...
+            //
             File outFile = new File(dir, "perfil_" + userId + ".jpg");
-            // ...
+            //
             try (OutputStream out = new FileOutputStream(outFile)) {
-                // ...
+                //
             }
             return Uri.fromFile(outFile);
         } catch (Exception e) {

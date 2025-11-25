@@ -3,9 +3,12 @@ package com.devst.verservidores.repositorio;
 import android.util.Log;
 import com.devst.verservidores.Comentario;
 import com.devst.verservidores.Usuario;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query; // Necesario para obtener la referencia de la colección
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,12 +46,51 @@ public class FirebaseRepositorio {
                 .addOnFailureListener(e -> Log.w(TAG, "Error al actualizar usuario", e));
     }
 
-    public void eliminarUsuario(int userId) {
-        db.collection("usuarios")
-                .document(String.valueOf(userId))
-                .delete()
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Usuario eliminado con ID: " + userId))
-                .addOnFailureListener(e -> Log.w(TAG, "Error al eliminar usuario", e));
+    public void eliminarUsuarioYComentariosFirestore(String userId, final OnCompleteListener<Void> listener) {
+        // 1. Iniciar la eliminación del documento principal del usuario
+        WriteBatch batch = db.batch();
+        batch.delete(db.collection("usuarios").document(String.valueOf(userId))); // Elimina el documento de la colección "usuarios"
+
+        // 2. Consultar y eliminar comentarios de Discord
+        db.collection(COLECCION_COMENTARIOS)
+                .document("discord").collection("lista")
+                .whereEqualTo("userId", userId) // Campo necesario en tus documentos de comentario
+                .get()
+                .addOnSuccessListener(queryDiscord -> {
+
+                    // Agregar eliminación de Discord al Batch
+                    for (DocumentSnapshot document : queryDiscord.getDocuments()) {
+                        batch.delete(document.getReference());
+                    }
+
+                    // 3. Consultar y agregar eliminación de comentarios de Epic
+                    db.collection(COLECCION_COMENTARIOS)
+                            .document("epic").collection("lista")
+                            .whereEqualTo("userId", userId)
+                            .get()
+                            .addOnSuccessListener(queryEpic -> {
+
+                                // Agregar eliminación de Epic al Batch
+                                for (DocumentSnapshot document : queryEpic.getDocuments()) {
+                                    batch.delete(document.getReference());
+                                }
+
+                                // 4. Ejecutar todas las eliminaciones en una sola transacción
+                                batch.commit()
+                                        .addOnCompleteListener(listener) // Notifica el resultado final
+                                        .addOnFailureListener(e -> {
+                                            Log.e(TAG, "Fallo al ejecutar batch de eliminación en Firestore", e);
+                                        });
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "Fallo al buscar comentarios de Epic", e);
+                                // Notificar error si el listener lo soporta
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Fallo al buscar comentarios de Discord", e);
+                    // Notificar error si el listener lo soporta
+                });
     }
 
     // MÉTODOS DE COMENTARIOS

@@ -4,6 +4,7 @@ package com.devst.verservidores;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -96,41 +97,60 @@ public class ConfigActivity extends AppCompatActivity {
     private void eliminarCuenta() {
         // Obtener ID del usuario desde SharedPreferences
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
-        int userId = prefs.getInt("user_id", -1);
+        int userIdInt = prefs.getInt("user_id", -1); // Cambiado a userIdInt
+        final String userId = String.valueOf(userIdInt); // <--- CONVERTIDO A STRING
 
         // Si no hay usuario logeado, no seguimos
-        if (userId == -1) return;
+        if (userIdInt == -1) return;
 
         // 1. ELIMINACIÓN LOCAL (SQLite)
         AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
         android.database.sqlite.SQLiteDatabase db = admin.getWritableDatabase();
 
         // Ejecutar DELETE en la tabla usuarios (ON DELETE CASCADE eliminará los comentarios)
-        int rows = db.delete("usuarios", "id = ?", new String[]{String.valueOf(userId)});
+        // Usamos userIdInt en el parámetro de la base de datos local
+        int rows = db.delete("usuarios", "id = ?", new String[]{String.valueOf(userIdInt)});
         db.close();
 
         if (rows > 0) {
-            // 2. ELIMINACIÓN EN FIREBASE
+            // La eliminación local fue exitosa. Procedemos con Firebase.
+
+            // 2. ELIMINACIÓN EN FIREBASE (Se hace de forma ASÍNCRONA)
             FirebaseRepositorio firebaseRepo = new FirebaseRepositorio();
-            // Esto elimina el documento del usuario en Firestore (usuarios/ID)
-            firebaseRepo.eliminarUsuario(userId);
 
-            // 3. LIMPIEZA Y REDIRECCIÓN EXITOSA
-            prefs.edit().clear().apply();
+            // LLAMADA CORREGIDA: Pasamos el String userId y el listener
+            firebaseRepo.eliminarUsuarioYComentariosFirestore(userId, task -> {
+                if (task.isSuccessful()) {
+                    // ÉXITO en la eliminación de datos de Firestore
 
-            android.widget.Toast.makeText(this, "Cuenta eliminada con éxito", android.widget.Toast.LENGTH_LONG).show();
+                    // 3. LIMPIEZA Y REDIRECCIÓN EXITOSA
+                    prefs.edit().clear().apply();
+                    android.widget.Toast.makeText(this, "Cuenta eliminada con éxito", android.widget.Toast.LENGTH_LONG).show();
 
-            // Redirigir al LoginActivity (SOLO UNA VEZ)
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+                    // Redirigir al LoginActivity (SOLO UNA VEZ)
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    // FALLO en la eliminación de datos de Firestore
+                    Log.e("ConfigActivity", "Error al eliminar datos de Firebase: ", task.getException());
+                    // Mensaje al usuario: La cuenta local se eliminó, pero los datos de Firebase no.
+                    android.widget.Toast.makeText(this, "Error: La cuenta local se eliminó, pero los datos de la nube persisten.", android.widget.Toast.LENGTH_LONG).show();
+
+                    // Aún podemos limpiar las prefs locales y redirigir, ya que la cuenta local ya no existe.
+                    prefs.edit().clear().apply();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+            });
 
         } else {
             // Fallo en la eliminación local
-            android.widget.Toast.makeText(this, "Error al eliminar la cuenta", android.widget.Toast.LENGTH_SHORT).show();
-
-            // Si falla la eliminación local, no intentamos eliminar de Firebase ni redirigimos
+            android.widget.Toast.makeText(this, "Error al eliminar la cuenta localmente", android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 

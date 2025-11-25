@@ -2,14 +2,14 @@ package com.devst.verservidores;
 
 // Clase modelo para sincronizar con Firebase Realtime Database
 public class Comentario {
-    private int userId;
+    private String userId;
     private String texto;
     private String tipo; // "epic" o "discord"
     private long timestamp; // Usaremos long (milisegundos) para facilitar el ordenamiento y sincronización con SQLite
 
     public Comentario() {} // Requerido por Firebase para deserializar
 
-    public Comentario(int userId, String texto, String tipo, long timestamp) {
+    public Comentario(String userId, String texto, String tipo, long timestamp) {
         this.userId = userId;
         this.texto = texto;
         this.tipo = tipo;
@@ -17,8 +17,8 @@ public class Comentario {
     }
 
     // Getters y Setters requeridos por Firebase
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
     public String getTexto() { return texto; }
     public void setTexto(String texto) { this.texto = texto; }

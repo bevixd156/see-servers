@@ -169,10 +169,11 @@ public class ComentarioManager {
         long idComentario = dbHelper.insertComment(currentUserId, texto, tipoServicio, fechaFormateada);
 
         if (idComentario > 0) {
+            String userIdString = String.valueOf(this.currentUserId);
             // 3. Crear el objeto Comentario compatible con Firebase (solo los 4 campos)
             // ⬅️ CORRECCIÓN: El constructor de Comentario solo lleva 4 campos (userId, texto, tipo, timestamp)
             Comentario comentarioRTDB = new Comentario(
-                    currentUserId,
+                    userIdString,
                     texto,
                     tipoServicio,
                     timestampMs
@@ -229,7 +230,7 @@ public class ComentarioManager {
 
             // ** 2.2. Actualizar Firebase **
             Comentario comentarioRTDB = new Comentario(
-                    c.userId,
+                    String.valueOf(c.userId),
                     nuevo,
                     tipoServicio,
                     nuevoTimestampMs // Usamos el nuevo long timestamp
