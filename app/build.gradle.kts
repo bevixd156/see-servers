@@ -48,6 +48,7 @@ dependencies {
     // 2. Dependencias de Firebase sin especificar versión (la toma del BOM)
     implementation("com.google.firebase:firebase-firestore")     // Para Usuarios
     implementation("com.google.firebase:firebase-database")      // Para Comentarios (Realtime DB)
+    implementation("com.google.firebase:firebase-storage")
 
 
     implementation(libs.appcompat)

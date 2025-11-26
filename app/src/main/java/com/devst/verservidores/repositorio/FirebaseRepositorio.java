@@ -1,15 +1,21 @@
 package com.devst.verservidores.repositorio;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.Log;
 import com.devst.verservidores.Comentario;
 import com.devst.verservidores.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query; // Necesario para obtener la referencia de la colección
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +30,37 @@ public class FirebaseRepositorio {
         // Mantenemos la inicialización de Firestore
         db = FirebaseFirestore.getInstance();
         // Eliminamos la inicialización de RTDB
+    }
+    //Metodo antiguo para subir la imagen a firebase
+    //public void subirFotoPerfil(Bitmap bitmap, int userId, String fotoAntigua, OnSuccessListener<Uri> listener) {
+      //  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+       // Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 512, 512, false);
+      //  resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+    //    byte[] data = baos.toByteArray();
+
+ //       StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+  //              .child("fotos_perfil").child(userId + ".jpg");
+
+ //       storageRef.putBytes(data)
+   //             .addOnSuccessListener(taskSnapshot -> {
+                    // 1. ÉXITO: Obtener la URL de descarga y enviarla al listener
+              //      taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(listener);
+                //})
+          //      .addOnFailureListener(e -> {
+                    // 2. FALLO: Loguear error, pero enviar la URL ANTIGUA al listener.
+            //        Log.e("FirebaseRepo", "Fallo la subida de la imagen: " + e.getMessage());
+
+                    // Convertimos el String de la foto antigua a Uri y lo pasamos al listener.
+                    // Esto garantiza que guardarDatosLocalesYRemotos SIEMPRE se ejecute.
+        //            listener.onSuccess(Uri.parse(fotoAntigua));
+      //          });
+    //}
+
+    public void subirFotoPerfil(Bitmap bitmap, int userId, String fotoAntigua, OnSuccessListener<Uri> listener) {
+        // Aquí pondrías el código para guardar la imagen localmente y obtener la URI local.
+        // Por ahora, solo devolveremos la foto antigua para no romper la lógica de guardado:
+        Log.d("FirebaseRepo", "Subida a la nube omitida. Usando foto anterior.");
+        listener.onSuccess(Uri.parse(fotoAntigua));
     }
 
     // MÉTODOS DE USUARIO

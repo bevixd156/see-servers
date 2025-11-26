@@ -97,21 +97,14 @@ public class PerfilActivity extends AppCompatActivity {
 
             String foto = cursor.getString(2);
             if (foto != null && !foto.isEmpty()) {
-                // Se puede simplificar a Uri.parse(foto)
-                try {
-                    Uri fotoUri = Uri.parse(foto);
-                    // El File check es importante para URIs de archivo internas
-                    File file = new File(fotoUri.getPath());
-                    if (file.exists()) {
-                        imgPerfil.setImageURI(fotoUri);
-                    } else {
-                        // Si el archivo no existe (error de ruta), vuelve al default
-                        imgPerfil.setImageResource(R.drawable.user);
-                    }
-                } catch (Exception e) {
-                    // Si el parseo falla
-                    imgPerfil.setImageResource(R.drawable.user);
-                }
+                com.bumptech.glide.Glide.with(this)
+                        .load(foto)
+                        .placeholder(R.drawable.user) // Muestra esta imagen mientras carga
+                        .error(R.drawable.user)       // Muestra esta imagen si hay error (URL inaccesible, etc.)
+                        .circleCrop()                 // Aplica el recorte circular
+                        .into(imgPerfil);
+            } else {
+                imgPerfil.setImageResource(R.drawable.user);
             }
         }
 
