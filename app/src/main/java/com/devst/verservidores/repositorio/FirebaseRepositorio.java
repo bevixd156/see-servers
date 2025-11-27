@@ -1,8 +1,8 @@
 package com.devst.verservidores.repositorio;
 //Importaciones necesarias para el funcionamiento de la clase
 import android.util.Log;
-import com.devst.verservidores.Comentario;
-import com.devst.verservidores.Usuario;
+import com.devst.verservidores.comment.Comentario;
+import com.devst.verservidores.vista.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

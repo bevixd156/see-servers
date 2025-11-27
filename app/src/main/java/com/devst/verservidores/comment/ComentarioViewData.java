@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.comment;
 
 // Clase modelo para mostrar datos del comentario en la interfaz
 public class ComentarioViewData {

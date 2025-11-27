@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.vista;
 // Importaciones necesarias
 import android.content.ContentValues;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.devst.verservidores.R;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
 

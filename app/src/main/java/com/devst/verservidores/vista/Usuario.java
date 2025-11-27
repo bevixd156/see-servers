@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.vista;
 
 public class Usuario {
 

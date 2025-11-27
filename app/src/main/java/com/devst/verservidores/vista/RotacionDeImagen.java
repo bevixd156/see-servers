@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.vista;
 
 // Importaciones necesarias para trabajar con imágenes, EXIF y logs
 import android.content.Context;

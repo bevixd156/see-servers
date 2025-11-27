@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.vista;
 
 // Librerías necesarias
 import android.content.SharedPreferences;
@@ -15,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import com.devst.verservidores.R;
+import com.devst.verservidores.api.ApiFetcher;
+import com.devst.verservidores.comment.ComentarioManager;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
 import com.google.gson.Gson;

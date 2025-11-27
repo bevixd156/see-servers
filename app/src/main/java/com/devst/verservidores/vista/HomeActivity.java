@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.vista;
 // Importaciones necesarias
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import com.bumptech.glide.Glide;
+import com.devst.verservidores.R;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 
 public class HomeActivity extends AppCompatActivity {

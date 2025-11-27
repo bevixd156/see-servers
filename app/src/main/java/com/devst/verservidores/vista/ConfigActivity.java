@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.vista;
 
 // Librerías necesarias
 import android.content.Intent;
@@ -13,6 +13,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
 
+import com.devst.verservidores.R;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
 import com.google.android.material.switchmaterial.SwitchMaterial;

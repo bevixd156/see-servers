@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.vista;
 // Importaciones necesarias
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.devst.verservidores.R;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 
 public class PerfilActivity extends AppCompatActivity {

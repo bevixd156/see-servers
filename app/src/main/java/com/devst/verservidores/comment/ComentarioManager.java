@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.comment;
 
 // Importaciones necesarias para el funcionamiento
 import android.app.Activity;
@@ -21,6 +21,8 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.devst.verservidores.vista.PerfilPublicoActivity;
+import com.devst.verservidores.R;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
 

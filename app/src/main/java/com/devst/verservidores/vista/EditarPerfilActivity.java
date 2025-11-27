@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.vista;
 
 //Importamos las librerías necesarias
 import android.content.ContentValues;
@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.devst.verservidores.R;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
 import com.bumptech.glide.Glide;
@@ -27,7 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 //Clase auxiliar para rotar imágenes
-import com.devst.verservidores.RotacionDeImagen;
+
 
 public class EditarPerfilActivity extends AppCompatActivity {
 

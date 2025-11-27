@@ -16,33 +16,33 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Verservidores">
 
-        <activity android:name=".PerfilPublicoActivity"
+        <activity android:name=".vista.PerfilPublicoActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
-        <activity android:name=".EditarPerfilActivity"
+        <activity android:name=".vista.EditarPerfilActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
-        <activity android:name=".PerfilActivity"
+        <activity android:name=".vista.PerfilActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
-        <activity android:name=".DiscordActivity"
+        <activity android:name=".vista.DiscordActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
-        <activity android:name=".EpicActivity"
+        <activity android:name=".vista.EpicActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ConfigActivity"
+        <activity android:name=".vista.ConfigActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
-        <activity android:name=".HomeActivity"
+        <activity android:name=".vista.HomeActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
-        <activity android:name=".RegistroActivity"
+        <activity android:name=".vista.RegistroActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".vista.LoginActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>

@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.api;
 
 // Clase para realizar peticiones HTTP y procesar JSON
 public class ApiFetcher {

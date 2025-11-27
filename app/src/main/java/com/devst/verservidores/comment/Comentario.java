@@ -1,4 +1,4 @@
-package com.devst.verservidores;
+package com.devst.verservidores.comment;
 
 // Clase modelo para sincronizar con Firebase
 public class Comentario {
