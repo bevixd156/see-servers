@@ -1,70 +1,31 @@
 package com.devst.verservidores.repositorio;
-
-import android.graphics.Bitmap;
-import android.net.Uri;
+//Importaciones necesarias para el funcionamiento de la clase
 import android.util.Log;
 import com.devst.verservidores.Comentario;
 import com.devst.verservidores.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query; // Necesario para obtener la referencia de la colección
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FirebaseRepositorio {
 
+    // Instancia principal de Firestore y constantes utilizadas por la clase
     private final FirebaseFirestore db;
-    // Eliminamos la referencia a Realtime Database: private final DatabaseReference rtdb;
     private static final String TAG = "FirebaseRepo";
-    private static final String COLECCION_COMENTARIOS = "comentarios_fs"; // Nuevo nombre para evitar conflictos
+    private static final String COLECCION_COMENTARIOS = "comentarios_fs";
 
+    // Constructor: inicializa Firestore
     public FirebaseRepositorio() {
-        // Mantenemos la inicialización de Firestore
         db = FirebaseFirestore.getInstance();
-        // Eliminamos la inicialización de RTDB
-    }
-    //Metodo antiguo para subir la imagen a firebase
-    //public void subirFotoPerfil(Bitmap bitmap, int userId, String fotoAntigua, OnSuccessListener<Uri> listener) {
-      //  ByteArrayOutputStream baos = new ByteArrayOutputStream();
-       // Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 512, 512, false);
-      //  resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-    //    byte[] data = baos.toByteArray();
-
- //       StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-  //              .child("fotos_perfil").child(userId + ".jpg");
-
- //       storageRef.putBytes(data)
-   //             .addOnSuccessListener(taskSnapshot -> {
-                    // 1. ÉXITO: Obtener la URL de descarga y enviarla al listener
-              //      taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(listener);
-                //})
-          //      .addOnFailureListener(e -> {
-                    // 2. FALLO: Loguear error, pero enviar la URL ANTIGUA al listener.
-            //        Log.e("FirebaseRepo", "Fallo la subida de la imagen: " + e.getMessage());
-
-                    // Convertimos el String de la foto antigua a Uri y lo pasamos al listener.
-                    // Esto garantiza que guardarDatosLocalesYRemotos SIEMPRE se ejecute.
-        //            listener.onSuccess(Uri.parse(fotoAntigua));
-      //          });
-    //}
-
-    public void subirFotoPerfil(Bitmap bitmap, int userId, String fotoAntigua, OnSuccessListener<Uri> listener) {
-        // Aquí pondrías el código para guardar la imagen localmente y obtener la URI local.
-        // Por ahora, solo devolveremos la foto antigua para no romper la lógica de guardado:
-        Log.d("FirebaseRepo", "Subida a la nube omitida. Usando foto anterior.");
-        listener.onSuccess(Uri.parse(fotoAntigua));
     }
 
-    // MÉTODOS DE USUARIO
-    //(El código de agregarUsuario, actualizarUsuario, eliminarUsuario se mantiene)
+    // Agrega un usuario a Firestore con su ID como documento
     public void agregarUsuario(int userId, Usuario usuario) {
         db.collection("usuarios")
                 .document(String.valueOf(userId))
@@ -73,9 +34,8 @@ public class FirebaseRepositorio {
                 .addOnFailureListener(e -> Log.w("FirebaseRepo", "Error al agregar usuario", e));
     }
 
+    // Actualiza un usuario existente usando merge() para no eliminar campos previos
     public void actualizarUsuario(int userId, Usuario usuario) {
-        // Usamos set con SetOptions.merge() para actualizar solo los campos existentes
-        // en el objeto 'usuario', sin eliminar los demás campos del documento.
         db.collection("usuarios")
                 .document(String.valueOf(userId))
                 .set(usuario, SetOptions.merge())
@@ -83,65 +43,59 @@ public class FirebaseRepositorio {
                 .addOnFailureListener(e -> Log.w(TAG, "Error al actualizar usuario", e));
     }
 
+    // Elimina un usuario y todos sus comentarios asociados usando WriteBatch
     public void eliminarUsuarioYComentariosFirestore(String userId, final OnCompleteListener<Void> listener) {
-        // 1. Iniciar la eliminación del documento principal del usuario
-        WriteBatch batch = db.batch();
-        batch.delete(db.collection("usuarios").document(String.valueOf(userId))); // Elimina el documento de la colección "usuarios"
 
-        // 2. Consultar y eliminar comentarios de Discord
+        // Eliminación del documento principal del usuario
+        WriteBatch batch = db.batch();
+        batch.delete(db.collection("usuarios").document(String.valueOf(userId)));
+
+        // Buscar y eliminar comentarios de Discord
         db.collection(COLECCION_COMENTARIOS)
                 .document("discord").collection("lista")
-                .whereEqualTo("userId", userId) // Campo necesario en tus documentos de comentario
+                .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(queryDiscord -> {
 
-                    // Agregar eliminación de Discord al Batch
                     for (DocumentSnapshot document : queryDiscord.getDocuments()) {
                         batch.delete(document.getReference());
                     }
 
-                    // 3. Consultar y agregar eliminación de comentarios de Epic
+                    // Buscar y eliminar comentarios de Epic
                     db.collection(COLECCION_COMENTARIOS)
                             .document("epic").collection("lista")
                             .whereEqualTo("userId", userId)
                             .get()
                             .addOnSuccessListener(queryEpic -> {
 
-                                // Agregar eliminación de Epic al Batch
                                 for (DocumentSnapshot document : queryEpic.getDocuments()) {
                                     batch.delete(document.getReference());
                                 }
 
-                                // 4. Ejecutar todas las eliminaciones en una sola transacción
+                                // Ejecutar todas las eliminaciones juntas
                                 batch.commit()
-                                        .addOnCompleteListener(listener) // Notifica el resultado final
-                                        .addOnFailureListener(e -> {
-                                            Log.e(TAG, "Fallo al ejecutar batch de eliminación en Firestore", e);
-                                        });
+                                        .addOnCompleteListener(listener)
+                                        .addOnFailureListener(e -> Log.e(TAG, "Error en batch de eliminación", e));
                             })
-                            .addOnFailureListener(e -> {
-                                Log.e(TAG, "Fallo al buscar comentarios de Epic", e);
-                                // Notificar error si el listener lo soporta
-                            });
+                            .addOnFailureListener(e ->
+                                    Log.e(TAG, "Error buscando comentarios de Epic", e));
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Fallo al buscar comentarios de Discord", e);
-                    // Notificar error si el listener lo soporta
-                });
+                .addOnFailureListener(e ->
+                        Log.e(TAG, "Error buscando comentarios de Discord", e));
     }
 
-    // MÉTODOS DE COMENTARIOS
+    // Agrega un comentario dentro del documento del servicio (discord, epic, etc)
     public void agregarComentario(String tipoServicio, int idComentario, Comentario comentario) {
-        // En Firestore, usamos el ID de SQLite como ID del documento dentro de la subcolección.
         db.collection(COLECCION_COMENTARIOS)
-                .document(tipoServicio) // Documento padre para agrupar por servicio (Discord o Epic)
-                .collection("lista")    // Subcolección de comentarios
+                .document(tipoServicio)
+                .collection("lista")
                 .document(String.valueOf(idComentario))
                 .set(comentario)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Comentario agregado a Firestore, ID: " + idComentario))
-                .addOnFailureListener(e -> Log.w(TAG, "Error al agregar comentario a Firestore", e));
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Comentario agregado, ID: " + idComentario))
+                .addOnFailureListener(e -> Log.w(TAG, "Error al agregar comentario", e));
     }
 
+    // Actualiza los campos principales de un comentario específico
     public void actualizarComentario(String tipoServicio, int idComentario, Comentario comentarioActualizado) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("texto", comentarioActualizado.getTexto());
@@ -152,26 +106,26 @@ public class FirebaseRepositorio {
                 .collection("lista")
                 .document(String.valueOf(idComentario))
                 .update(updates)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Comentario actualizado en Firestore, ID: " + idComentario))
-                .addOnFailureListener(e -> Log.w(TAG, "Error al actualizar comentario en Firestore", e));
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Comentario actualizado, ID: " + idComentario))
+                .addOnFailureListener(e -> Log.w(TAG, "Error al actualizar comentario", e));
     }
 
+    // Elimina un comentario específico por ID dentro del servicio correspondiente
     public void eliminarComentario(String tipoServicio, int idComentario) {
         db.collection(COLECCION_COMENTARIOS)
                 .document(tipoServicio)
                 .collection("lista")
                 .document(String.valueOf(idComentario))
                 .delete()
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Comentario eliminado de Firestore, ID: " + idComentario))
-                .addOnFailureListener(e -> Log.w(TAG, "Error al eliminar comentario de Firestore", e));
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Comentario eliminado, ID: " + idComentario))
+                .addOnFailureListener(e -> Log.w(TAG, "Error al eliminar comentario", e));
     }
 
-    // NUEVO METODO PARA OBTENER LA REFERENCIA DE CONSULTA DE FIRESTORE
+    // Devuelve una Query ordenada por timestamp para mostrar comentarios en tiempo real
     public Query getComentariosQuery(String tipoServicio) {
-        // Devolvemos la referencia a la subcolección 'lista'
         return db.collection(COLECCION_COMENTARIOS)
                 .document(tipoServicio)
                 .collection("lista")
-                .orderBy("timestamp", Query.Direction.ASCENDING); // Asumiendo que Comentario tiene un campo 'timestamp'
+                .orderBy("timestamp", Query.Direction.ASCENDING);
     }
 }

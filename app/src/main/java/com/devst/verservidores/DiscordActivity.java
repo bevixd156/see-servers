@@ -1,7 +1,7 @@
 package com.devst.verservidores;
-//Librerias necesarias
+
+// Librerías necesarias
 import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -11,25 +11,21 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 
 public class DiscordActivity extends AppCompatActivity {
-    //Implementamos Objetos
+
+    // Objetos de la clase
     private LinearLayout commentsContainer;
     private EditText edtNewComment;
     private ComentarioManager comentarioManager;
@@ -39,19 +35,20 @@ public class DiscordActivity extends AppCompatActivity {
     private int currentUserId;
     private static final String TIPO_SERVICIO = "discord";
     private static final String TAG = "DiscordActivity";
-    private ListenerRegistration firestoreRegistration; // El objeto para desconectar el listener
-    private Query firestoreQuery; // La referencia de la consulta
+    private ListenerRegistration firestoreRegistration; // Listener de Firestore
+    private Query firestoreQuery; // Consulta de Firestore
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // La inicialización del repositorio y la base de datos se mueve al inicio.
+
+        // Inicialización DB y Firebase
         dbHelper = new AdminSQLiteOpenHelper(this);
         firebaseRepo = new FirebaseRepositorio();
 
         setContentView(R.layout.activity_discord);
 
-        // Configuración del Toolbar
+        // Configuración del toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -60,24 +57,23 @@ public class DiscordActivity extends AppCompatActivity {
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
         }
 
-        // Referencias a las vistas
+        // Referencias de vistas
         commentsContainer = findViewById(R.id.commentsContainer);
         edtNewComment = findViewById(R.id.edtNewComment);
         btnSendComment = findViewById(R.id.btnSendComment);
         ScrollView scroll = findViewById(R.id.scrollComments);
 
-
-        // Obtener usuario logueado desde SharedPreferences
+        // Obtener usuario logueado
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         currentUserId = prefs.getInt("user_id", -1);
 
-        // Si no hay usuario logueado → cerrar actividad
-        if(currentUserId == -1){
+        // Si no hay usuario → cerrar
+        if (currentUserId == -1) {
             finish();
             return;
         }
 
-        // ✅ ÚNICA Y CORRECTA INICIALIZACIÓN DEL ComentarioManager
+        // Inicializar ComentarioManager
         comentarioManager = new ComentarioManager(
                 this,
                 commentsContainer,
@@ -87,16 +83,16 @@ public class DiscordActivity extends AppCompatActivity {
                 currentUserId
         );
 
-        // Cargar servicios del estado oficial de Discord
+        // Cargar estado del servidor
         loadDiscordServices();
 
-        // Cargar comentarios existentes de la base de datos local
+        // Cargar comentarios locales
         comentarioManager.loadComments(TIPO_SERVICIO);
 
-        // ✅ INICIAR ESCUCHA DE FIREBASE AHORA
+        // Iniciar escucha en Firebase
         startFirebaseListener(TIPO_SERVICIO);
 
-        // Función boton enviar comentarios
+        // Botón enviar comentario
         btnSendComment.setOnClickListener(v -> {
             String message = edtNewComment.getText().toString().trim();
             if (!message.isEmpty()) {
@@ -106,25 +102,19 @@ public class DiscordActivity extends AppCompatActivity {
         });
     }
 
-    // ===========================
-    // ✅ METODO PARA INICIAR LA ESCUCHA DE FIREBASE
-    // ===========================
-    // Este metodo usa el Listener de Firestore para obtener actualizaciones en tiempo real
+    // Inicia listener de Firebase para actualizaciones en tiempo real
     private void startFirebaseListener(String tipoServicio) {
-        // 1. Obtener la referencia de la consulta de Firestore
+        // Obtener consulta
         firestoreQuery = firebaseRepo.getComentariosQuery(tipoServicio);
 
-        // 2. Adjuntar el Snapshot Listener (Escucha en tiempo real)
+        // Adjuntar listener
         firestoreRegistration = firestoreQuery.addSnapshotListener((snapshots, error) -> {
             if (error != null) {
-                Log.w(TAG, "Error de escucha en Firestore:", error);
+                Log.w(TAG, "Error de escucha:", error);
                 return;
             }
 
-            // Se ejecuta cada vez que hay un cambio.
-            Log.d(TAG, "Cambios detectados en Firestore, recargando UI.");
-
-            // La misma llamada para recargar los comentarios de SQLite (que se actualizan con la app)
+            // Recargar comentarios
             comentarioManager.loadComments(tipoServicio);
         });
     }
@@ -132,35 +122,35 @@ public class DiscordActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // ❌ LIMPIEZA CRUCIAL: Detener el listener de Firestore
+
+        // Quitar listener al salir
         if (firestoreRegistration != null) {
             firestoreRegistration.remove();
-            Log.d(TAG, "Listener de Firestore desconectado.");
+            Log.d(TAG, "Listener desconectado.");
         }
     }
 
-    //Obtener el estado del servidor de Discord
+    // Cargar estado del servidor oficial de Discord
     private void loadDiscordServices() {
         LinearLayout servicesContainer = findViewById(R.id.servicesContainer);
         servicesContainer.removeAllViews();
 
-        // URL del estado oficial de Discord (JSON)
         final String URL = "https://discordstatus.com/api/v2/components.json";
 
-        // Hilo para el JSON
+        // Hilo para obtener JSON
         new Thread(() -> {
-            String json = ApiFetcher.getJson(URL); // Metodo para obtener JSON
+            String json = ApiFetcher.getJson(URL);
             runOnUiThread(() -> populateDiscordServices(json));
         }).start();
     }
 
-    //Procesar la peticion para el JSON recibido del servidor de Discord
+    // Procesa el JSON obtenido del servidor
     private void populateDiscordServices(String json) {
         if (json == null) return;
-        //Convertidor de objetos Java y Json
+
         Gson g = new Gson();
         JsonObject obj = g.fromJson(json, JsonObject.class);
-        //Referenciamos a la vista
+
         LinearLayout servicesContainer = findViewById(R.id.servicesContainer);
         servicesContainer.removeAllViews();
 
@@ -175,14 +165,14 @@ public class DiscordActivity extends AppCompatActivity {
         }
     }
 
-    //Caja para contener los distintos servicios en operacion
+    // Crea una caja con un servicio y su estado
     private LinearLayout createServiceBlock(String name, String status) {
         LinearLayout block = new LinearLayout(this);
         block.setOrientation(LinearLayout.HORIZONTAL);
         block.setGravity(Gravity.CENTER_VERTICAL);
         block.setPadding(0, 8, 0, 8);
 
-        //Nombre del servicio
+        // Nombre del servicio
         TextView tv = new TextView(this);
         tv.setTextSize(18);
         tv.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -195,7 +185,7 @@ public class DiscordActivity extends AppCompatActivity {
         circleParams.setMarginStart(8);
         circle.setLayoutParams(circleParams);
 
-        // Colores según estado
+        // Color según estado
         int drawable;
         switch (status.toLowerCase()) {
             case "partial_outage":
@@ -220,7 +210,7 @@ public class DiscordActivity extends AppCompatActivity {
         return block;
     }
 
-    //Acción para la flecha atras
+    // Acción de la flecha atrás
     @Override
     public boolean onSupportNavigateUp() {
         finish();

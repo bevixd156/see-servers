@@ -49,6 +49,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")     // Para Usuarios
     implementation("com.google.firebase:firebase-database")      // Para Comentarios (Realtime DB)
     implementation("com.google.firebase:firebase-storage")
+    implementation("androidx.exifinterface:exifinterface:1.3.6")
 
 
     implementation(libs.appcompat)

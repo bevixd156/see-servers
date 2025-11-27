@@ -1,5 +1,6 @@
 package com.devst.verservidores;
 
+//Librerias necesarias
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.content.SharedPreferences;
@@ -12,27 +13,34 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
+
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
-// Importaciones de Realtime Database eliminadas o ignoradas
-// Importaciones de Firestore añadidas:
+
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class EpicActivity extends AppCompatActivity {
+
+    //Views principales
     private LinearLayout servicesContainer, commentsContainer;
     private ComentarioManager comentarioManager;
     private AdminSQLiteOpenHelper dbHelper;
     private FirebaseRepositorio firebaseRepo;
+
+    //Datos del usuario
     private int currentUserId;
+
+    //Constantes
     private static final String TIPO_SERVICIO = "epic";
     private static final String URL = "https://status.epicgames.com/api/v2/summary.json";
     private static final String TAG = "EpicActivity";
 
-    // Variables de Firestore AÑADIDAS:
+    //Firestore
     private ListenerRegistration firestoreRegistration;
     private Query firestoreQuery;
 
@@ -41,10 +49,11 @@ public class EpicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_epic);
 
+        //Repositorios y DB
         firebaseRepo = new FirebaseRepositorio();
-        dbHelper = new AdminSQLiteOpenHelper(this); // Inicialización movida aquí para claridad
+        dbHelper = new AdminSQLiteOpenHelper(this);
 
-        // Toolbar
+        //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -53,12 +62,12 @@ public class EpicActivity extends AppCompatActivity {
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
         }
 
-        // Views
+        //Referencias UI
         ScrollView scrollComments = findViewById(R.id.scrollComments);
         servicesContainer = findViewById(R.id.servicesContainer);
         commentsContainer = findViewById(R.id.commentsContainer);
 
-        // Obtener usuario logueado
+        //Cargar usuario actual
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         currentUserId = prefs.getInt("user_id", -1);
         if (currentUserId == -1) {
@@ -66,7 +75,7 @@ public class EpicActivity extends AppCompatActivity {
             return;
         }
 
-        // Creación del ComentarioManager
+        //Crear manejador de comentarios
         comentarioManager = new ComentarioManager(
                 this,
                 commentsContainer,
@@ -76,10 +85,8 @@ public class EpicActivity extends AppCompatActivity {
                 currentUserId
         );
 
-        // EditText
+        //Enviar nuevo comentario
         EditText edtNewComment = findViewById(R.id.edtNewComment);
-
-        // Botón enviar comentario
         findViewById(R.id.btnSendComment).setOnClickListener(v -> {
             String texto = edtNewComment.getText().toString().trim();
             if (!texto.isEmpty()) {
@@ -88,33 +95,28 @@ public class EpicActivity extends AppCompatActivity {
             }
         });
 
-        // Cargar servicios y comentarios
+        //Cargar servicios
         loadEpicStatus();
 
+        //Cargar comentarios
         comentarioManager.loadComments(TIPO_SERVICIO);
 
-        // INICIAR ESCUCHA DE FIRESTORE
+        //Iniciar escucha Firestore
         startFirebaseListener(TIPO_SERVICIO);
     }
 
-    // ===========================
-    // METODO PARA INICIAR LA ESCUCHA DE FIRESTORE
-    // ===========================
+    //Iniciar escucha en Firestore
     private void startFirebaseListener(String tipoServicio) {
-        // 1. Obtener la referencia de la consulta de Firestore
         firestoreQuery = firebaseRepo.getComentariosQuery(tipoServicio);
 
-        // 2. Adjuntar el Snapshot Listener (Escucha en tiempo real)
         firestoreRegistration = firestoreQuery.addSnapshotListener((snapshots, error) -> {
             if (error != null) {
                 Log.w(TAG, "Error de escucha en Firestore:", error);
                 return;
             }
 
-            // Se ejecuta cada vez que hay un cambio.
             Log.d(TAG, "Cambios detectados en Firestore, recargando UI.");
 
-            // La misma llamada para recargar los comentarios de SQLite
             comentarioManager.loadComments(tipoServicio);
         });
     }
@@ -122,14 +124,15 @@ public class EpicActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // LIMPIEZA CRUCIAL: Detener el listener de Firestore
+
+        //Detener listener Firestore
         if (firestoreRegistration != null) {
             firestoreRegistration.remove();
             Log.d(TAG, "Listener de Firestore desconectado.");
         }
     }
 
-    // CARGAR ESTADO DEL SERVICIO (Mantenido)
+    //Cargar estado del servicio Epic
     private void loadEpicStatus() {
         new Thread(() -> {
             String json = ApiFetcher.getJson(URL);
@@ -137,6 +140,7 @@ public class EpicActivity extends AppCompatActivity {
         }).start();
     }
 
+    //Procesar JSON y mostrar servicios
     private void populateServices(String json) {
         if (json == null) return;
 
@@ -156,7 +160,7 @@ public class EpicActivity extends AppCompatActivity {
         }
     }
 
-    // Crear blocks visuales (Mantenido)
+    //Crear bloque visual de servicio
     private LinearLayout createServiceBlock(String name, String status) {
         LinearLayout block = new LinearLayout(this);
         block.setOrientation(LinearLayout.HORIZONTAL);
@@ -179,13 +183,16 @@ public class EpicActivity extends AppCompatActivity {
             case "operational":
                 drawable = R.drawable.circle_green;
                 break;
+
             case "degraded_performance":
                 drawable = R.drawable.circle_yellow;
                 break;
+
             case "partial_outage":
             case "major_outage":
                 drawable = R.drawable.circle_red;
                 break;
+
             default:
                 drawable = R.drawable.circle_gray;
                 break;

@@ -1,11 +1,12 @@
 package com.devst.verservidores;
-
+// Importaciones necesarias
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,10 +17,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 
-import java.io.File;
-
 public class PerfilActivity extends AppCompatActivity {
-
+    // Objetos de la clase
     private ImageView imgPerfil;
     private TextView txtNombre, txtCorreo, txtFechaRegistro;
     private Button btnEditarPerfil, btnCerrarSesion;
@@ -30,6 +29,7 @@ public class PerfilActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
 
+        // // Referencias UI
         imgPerfil = findViewById(R.id.imgPerfil);
         txtNombre = findViewById(R.id.txtNombrePerfil);
         txtCorreo = findViewById(R.id.txtCorreoPerfil);
@@ -39,46 +39,47 @@ public class PerfilActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Configuración del Toolbar (mantener código original)
+        // // Configuración del Toolbar
         if (toolbar != null && getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Mi Perfil"); // Título más apropiado
+            getSupportActionBar().setTitle("Mi Perfil");
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
         }
 
+        // // Obtener sesión guardada
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         userId = prefs.getInt("user_id", -1);
+
+        // // Si no hay usuario, volver al login
         if (userId == -1) {
-            // Si no hay sesión, redirigir al Login y terminar.
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         }
 
+        // // Cargar información del usuario
         cargarDatosUsuario(userId);
 
+        // // Abrir editor de perfil
         btnEditarPerfil.setOnClickListener(v -> {
             Intent intent = new Intent(PerfilActivity.this, EditarPerfilActivity.class);
             intent.putExtra("user_id", userId);
             startActivity(intent);
         });
 
-        // Lógica de CERRAR SESIÓN (CORREGIDA)
+        // // Cerrar sesión
         btnCerrarSesion.setOnClickListener(v -> {
-            // 1. Limpiar SharedPreferences para eliminar la sesión
             prefs.edit().clear().apply();
-
             Toast.makeText(PerfilActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
 
-            // 2. Redirigir a LoginActivity y limpiar la pila de actividades
             Intent intent = new Intent(PerfilActivity.this, LoginActivity.class);
-            // Flags para evitar que el usuario vuelva a Home/Perfil con el botón de retroceso
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         });
     }
 
+    // // Cargar datos desde SQLite
     private void cargarDatosUsuario(int userId) {
         AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
         SQLiteDatabase db = admin.getReadableDatabase();
@@ -95,14 +96,24 @@ public class PerfilActivity extends AppCompatActivity {
             txtCorreo.setText(cursor.getString(1));
             txtFechaRegistro.setText("Se unió el: " + cursor.getString(3));
 
-            String foto = cursor.getString(2);
-            if (foto != null && !foto.isEmpty()) {
-                com.bumptech.glide.Glide.with(this)
-                        .load(foto)
-                        .placeholder(R.drawable.user) // Muestra esta imagen mientras carga
-                        .error(R.drawable.user)       // Muestra esta imagen si hay error (URL inaccesible, etc.)
-                        .circleCrop()                 // Aplica el recorte circular
-                        .into(imgPerfil);
+            // // Cargar imagen guardada en Base64
+            String base64Foto = cursor.getString(2);
+
+            if (base64Foto != null && !base64Foto.isEmpty()) {
+                try {
+                    byte[] imageBytes = Base64.decode(base64Foto, Base64.DEFAULT);
+
+                    com.bumptech.glide.Glide.with(this)
+                            .load(imageBytes)
+                            .placeholder(R.drawable.user)
+                            .error(R.drawable.user)
+                            .circleCrop()
+                            .into(imgPerfil);
+
+                } catch (IllegalArgumentException e) {
+                    Log.e("PerfilActivity", "Error al decodificar Base64: " + e.getMessage());
+                    imgPerfil.setImageResource(R.drawable.user);
+                }
             } else {
                 imgPerfil.setImageResource(R.drawable.user);
             }
@@ -112,17 +123,17 @@ public class PerfilActivity extends AppCompatActivity {
         db.close();
     }
 
-    // Acción botón "Atrás" (MANTENER CÓDIGO ORIGINAL)
+    // // Acción botón atrás
     @Override
-    public boolean onSupportNavigateUp(){
+    public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
+    // // Refrescar datos al volver a la pantalla
     @Override
     protected void onResume() {
         super.onResume();
-        // Cargar datos del usuario cada vez que la actividad vuelve al frente
         if (userId != -1) {
             cargarDatosUsuario(userId);
         }

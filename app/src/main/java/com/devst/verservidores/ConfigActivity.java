@@ -1,6 +1,6 @@
 package com.devst.verservidores;
 
-//Librerias necesarias
+// Librerías necesarias
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AlertDialog; // Importación necesaria para AlertDialog
+import androidx.appcompat.app.AlertDialog;
 
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
@@ -25,65 +25,56 @@ public class ConfigActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_config);
 
-        // Referencias e inicializaciones del Toolbar y GitHub (mantener el código original)
-        // ...
-
-        // Referencia al icono que abre el repositorio de GitHub
+        // Icono para abrir el repositorio en GitHub
         ImageView gitHubWeb = findViewById(R.id.gitHubWeb);
-        // Abre el navegador a la pagina del repositorio de github
+        // Abre el navegador con el proyecto
         gitHubWeb.setOnClickListener(v -> {
             String url = "https://github.com/bevixd156/see-servers";
-            android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url));
+            Intent intent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url));
             startActivity(intent);
         });
 
-        // Configuración de Toolbar
+        // Configuración del toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Función flecha atras
+        // Flecha atrás y título
         if (toolbar != null && getSupportActionBar() != null) {
-            // Activar flecha "Atrás"
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            // Título del activity
             getSupportActionBar().setTitle("Ajustes");
-            // Color blanco para la flecha
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
         }
 
-        // Función para el cambio de Modo Claro y Oscuro (mantener el código original)
+        // Switch para cambiar entre modo claro y oscuro
         SwitchMaterial switchTema = findViewById(R.id.switchTema);
 
-        // Leer preferencia guardada
+        // Leer preferencia del tema
         SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
         boolean modoOscuro = prefs.getBoolean("modo_oscuro", false);
-        // Estado del Switch
+
+        // Estado actual del switch
         switchTema.setChecked(modoOscuro);
 
-        // Aplicar tema actual al iniciar
+        // Aplicar tema al iniciar
         AppCompatDelegate.setDefaultNightMode(
                 modoOscuro ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
         );
-        // Listener para cuando el usuario cambia el modo
-        switchTema.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Guardar elección
-            prefs.edit().putBoolean("modo_oscuro", isChecked).apply();
 
-            // Aplicar tema
+        // Guardar y aplicar cuando el usuario cambia el tema
+        switchTema.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("modo_oscuro", isChecked).apply();
             AppCompatDelegate.setDefaultNightMode(
                     isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
             );
         });
 
-        // Referenciamos el boton de eliminar la cuenta
+        // Botón para eliminar la cuenta
         Button btnEliminarCuenta = findViewById(R.id.btnEliminarCuenta);
-        // Evento de boton de eliminar cuenta
-        btnEliminarCuenta.setOnClickListener(v ->
-                mostrarDialogoEliminarCuenta());
-
+        // Abrir diálogo de confirmación
+        btnEliminarCuenta.setOnClickListener(v -> mostrarDialogoEliminarCuenta());
     }
 
-    // mini PopUp para eliminar la cuenta
+    // Ventana emergente para confirmar eliminación
     private void mostrarDialogoEliminarCuenta() {
         new AlertDialog.Builder(this)
                 .setTitle("Eliminar cuenta")
@@ -93,54 +84,54 @@ public class ConfigActivity extends AppCompatActivity {
                 .show();
     }
 
-    // Función para Delete de eliminar la cuenta (CORREGIDA)
+    // Eliminar cuenta local + Firebase
     private void eliminarCuenta() {
-        // Obtener ID del usuario desde SharedPreferences
+        // Obtener ID guardado del usuario
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
-        int userIdInt = prefs.getInt("user_id", -1); // Cambiado a userIdInt
-        final String userId = String.valueOf(userIdInt); // <--- CONVERTIDO A STRING
+        int userIdInt = prefs.getInt("user_id", -1);
+        final String userId = String.valueOf(userIdInt);
 
-        // Si no hay usuario logeado, no seguimos
+        // Si no hay usuario, cancelar
         if (userIdInt == -1) return;
 
-        // 1. ELIMINACIÓN LOCAL (SQLite)
+        // 1. Eliminar datos locales en SQLite
         AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
         android.database.sqlite.SQLiteDatabase db = admin.getWritableDatabase();
 
-        // Ejecutar DELETE en la tabla usuarios (ON DELETE CASCADE eliminará los comentarios)
-        // Usamos userIdInt en el parámetro de la base de datos local
+        // Eliminar usuario (los comentarios se eliminan por ON DELETE CASCADE)
         int rows = db.delete("usuarios", "id = ?", new String[]{String.valueOf(userIdInt)});
         db.close();
 
         if (rows > 0) {
-            // La eliminación local fue exitosa. Procedemos con Firebase.
-
-            // 2. ELIMINACIÓN EN FIREBASE (Se hace de forma ASÍNCRONA)
+            // 2. Eliminar datos del usuario en Firebase
             FirebaseRepositorio firebaseRepo = new FirebaseRepositorio();
 
-            // LLAMADA CORREGIDA: Pasamos el String userId y el listener
             firebaseRepo.eliminarUsuarioYComentariosFirestore(userId, task -> {
                 if (task.isSuccessful()) {
-                    // ÉXITO en la eliminación de datos de Firestore
+                    // Eliminación completa en Firebase
 
-                    // 3. LIMPIEZA Y REDIRECCIÓN EXITOSA
+                    // Limpiar preferencias locales
                     prefs.edit().clear().apply();
+
+                    // Mensaje de éxito
                     android.widget.Toast.makeText(this, "Cuenta eliminada con éxito", android.widget.Toast.LENGTH_LONG).show();
 
-                    // Redirigir al LoginActivity (SOLO UNA VEZ)
+                    // Redirigir al login
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
 
                 } else {
-                    // FALLO en la eliminación de datos de Firestore
+                    // Error al eliminar en Firebase
                     Log.e("ConfigActivity", "Error al eliminar datos de Firebase: ", task.getException());
-                    // Mensaje al usuario: La cuenta local se eliminó, pero los datos de Firebase no.
+
                     android.widget.Toast.makeText(this, "Error: La cuenta local se eliminó, pero los datos de la nube persisten.", android.widget.Toast.LENGTH_LONG).show();
 
-                    // Aún podemos limpiar las prefs locales y redirigir, ya que la cuenta local ya no existe.
+                    // Aun así limpiamos lo local
                     prefs.edit().clear().apply();
+
+                    // Redirigir al login
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -149,15 +140,14 @@ public class ConfigActivity extends AppCompatActivity {
             });
 
         } else {
-            // Fallo en la eliminación local
+            // Error eliminando localmente
             android.widget.Toast.makeText(this, "Error al eliminar la cuenta localmente", android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Acción botón "Atrás"
+    // Acción de botón atrás
     @Override
     public boolean onSupportNavigateUp(){
-        // Cerrar la actividad y retorna atrás
         finish();
         return true;
     }
