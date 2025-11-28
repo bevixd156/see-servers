@@ -1,76 +1,76 @@
 package com.devst.verservidores.vista;
 
-//Librerias necesarias
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.devst.verservidores.R;
 import com.devst.verservidores.api.ApiFetcher;
 import com.devst.verservidores.comment.ComentarioManager;
 import com.devst.verservidores.db.AdminSQLiteOpenHelper;
 import com.devst.verservidores.repositorio.FirebaseRepositorio;
-
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 
-public class EpicActivity extends AppCompatActivity {
+public class CloudflareActivity extends AppCompatActivity {
 
-    //Views principales
-    private LinearLayout servicesContainer, commentsContainer;
+    private LinearLayout commentsContainer;
+    private LinearLayout servicesContainer;
+    private EditText edtNewComment;
+    private Button btnSendComment;
+
     private ComentarioManager comentarioManager;
-    private AdminSQLiteOpenHelper dbHelper;
     private FirebaseRepositorio firebaseRepo;
+    private AdminSQLiteOpenHelper dbHelper;
+    private ListenerRegistration firestoreRegistration;
 
-    //Datos del usuario
     private int currentUserId;
 
-    //Constantes
-    private static final String TIPO_SERVICIO = "epic";
-    private static final String URL = "https://status.epicgames.com/api/v2/summary.json";
-    private static final String TAG = "EpicActivity";
-
-    //Firestore
-    private ListenerRegistration firestoreRegistration;
-    private Query firestoreQuery;
+    private static final String TIPO_SERVICIO = "cloudflare";
+    private static final String URL = "https://www.cloudflarestatus.com/api/v2/components.json";
+    private static final String TAG = "CloudflareActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_epic);
+        setContentView(R.layout.activity_cloudflare);
 
-        //Repositorios y DB
+        // Firebase y DB
         firebaseRepo = new FirebaseRepositorio();
         dbHelper = new AdminSQLiteOpenHelper(this);
 
-        //Toolbar
+        // Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Estado de Cloudflare");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Estado de Epic Games");
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
         }
 
-        //Referencias UI
-        ScrollView scrollComments = findViewById(R.id.scrollComments);
+        // Referencias XML
         servicesContainer = findViewById(R.id.servicesContainer);
         commentsContainer = findViewById(R.id.commentsContainer);
 
-        //Cargar usuario actual
+        edtNewComment = findViewById(R.id.edtNewComment);
+        btnSendComment = findViewById(R.id.btnSendComment);
+        ScrollView scrollComments = findViewById(R.id.scrollComments);
+
+        // Usuario
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         currentUserId = prefs.getInt("user_id", -1);
         if (currentUserId == -1) {
@@ -78,7 +78,7 @@ public class EpicActivity extends AppCompatActivity {
             return;
         }
 
-        //Crear manejador de comentarios
+        // Manager comentarios
         comentarioManager = new ComentarioManager(
                 this,
                 commentsContainer,
@@ -88,117 +88,99 @@ public class EpicActivity extends AppCompatActivity {
                 currentUserId
         );
 
-        //Enviar nuevo comentario
-        EditText edtNewComment = findViewById(R.id.edtNewComment);
-        findViewById(R.id.btnSendComment).setOnClickListener(v -> {
-            String texto = edtNewComment.getText().toString().trim();
-            if (!texto.isEmpty()) {
-                comentarioManager.enviarComentario(TIPO_SERVICIO, texto);
+        // Cargar datos
+        loadCloudflareServices();
+        comentarioManager.loadComments(TIPO_SERVICIO);
+        startFirebaseListener();
+
+        // Botón enviar
+        btnSendComment.setOnClickListener(v -> {
+            String text = edtNewComment.getText().toString().trim();
+            if (!text.isEmpty()) {
+                comentarioManager.enviarComentario(TIPO_SERVICIO, text);
                 edtNewComment.setText("");
             }
         });
-
-        //Cargar servicios
-        loadEpicStatus();
-
-        //Cargar comentarios
-        comentarioManager.loadComments(TIPO_SERVICIO);
-
-        //Iniciar escucha Firestore
-        startFirebaseListener(TIPO_SERVICIO);
     }
 
-    //Iniciar escucha en Firestore
-    private void startFirebaseListener(String tipoServicio) {
-        firestoreQuery = firebaseRepo.getComentariosQuery(tipoServicio);
-
-        firestoreRegistration = firestoreQuery.addSnapshotListener((snapshots, error) -> {
-            if (error != null) {
-                Log.w(TAG, "Error de escucha en Firestore:", error);
+    // Listener Firebase
+    private void startFirebaseListener() {
+        Query query = firebaseRepo.getComentariosQuery(TIPO_SERVICIO);
+        firestoreRegistration = query.addSnapshotListener((snapshots, e) -> {
+            if (e != null) {
+                Log.e(TAG, "Error firebase:", e);
                 return;
             }
-
-            Log.d(TAG, "Cambios detectados en Firestore, recargando UI.");
-
-            comentarioManager.loadComments(tipoServicio);
+            comentarioManager.loadComments(TIPO_SERVICIO);
         });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        //Detener listener Firestore
-        if (firestoreRegistration != null) {
-            firestoreRegistration.remove();
-            Log.d(TAG, "Listener de Firestore desconectado.");
-        }
+        if (firestoreRegistration != null) firestoreRegistration.remove();
     }
 
-    //Cargar estado del servicio Epic
-    private void loadEpicStatus() {
+    // Obtener JSON
+    private void loadCloudflareServices() {
+        servicesContainer.removeAllViews();
         new Thread(() -> {
             String json = ApiFetcher.getJson(URL);
-            runOnUiThread(() -> populateServices(json));
+            runOnUiThread(() -> populateCloudflare(json));
         }).start();
     }
 
-    //Procesar JSON y mostrar servicios
-    private void populateServices(String json) {
+    // Procesar JSON
+    private void populateCloudflare(String json) {
         if (json == null) return;
 
         Gson g = new Gson();
         JsonObject obj = g.fromJson(json, JsonObject.class);
 
-        servicesContainer.removeAllViews();
+        if (!obj.has("components")) return;
 
-        if (obj.has("components")) {
-            for (JsonElement el : obj.getAsJsonArray("components")) {
-                JsonObject comp = el.getAsJsonObject();
-                String name = comp.has("name") ? comp.get("name").getAsString() : "Desconocido";
-                String status = comp.has("status") ? comp.get("status").getAsString() : "unknown";
+        for (JsonElement e : obj.getAsJsonArray("components")) {
+            JsonObject comp = e.getAsJsonObject();
 
-                servicesContainer.addView(createServiceBlock(name, status));
-            }
+            String name = comp.has("name") ? comp.get("name").getAsString() : "Desconocido";
+            String status = comp.has("status") ? comp.get("status").getAsString() : "unknown";
+
+            servicesContainer.addView(createServiceBlock(name, status));
         }
     }
 
-    //Crear bloque visual de servicio
+    // Crear bloque visual
     private LinearLayout createServiceBlock(String name, String status) {
         LinearLayout block = new LinearLayout(this);
         block.setOrientation(LinearLayout.HORIZONTAL);
         block.setGravity(Gravity.CENTER_VERTICAL);
-        block.setPadding(0, 8, 0, 8);
+        block.setPadding(0, 10, 0, 10);
 
         TextView tv = new TextView(this);
+        tv.setText(name + " : " + status);
         tv.setTextSize(18);
         tv.setTypeface(null, android.graphics.Typeface.BOLD);
         tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-        tv.setText(name + " : " + status);
 
         View circle = new View(this);
-        LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(40, 40);
-        cp.setMarginStart(8);
-        circle.setLayoutParams(cp);
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(40, 40);
+        p.setMarginStart(10);
+        circle.setLayoutParams(p);
 
         int drawable;
         switch (status.toLowerCase()) {
             case "operational":
                 drawable = R.drawable.circle_green;
                 break;
-
             case "degraded_performance":
                 drawable = R.drawable.circle_yellow;
                 break;
-
             case "partial_outage":
             case "major_outage":
                 drawable = R.drawable.circle_red;
                 break;
-
             default:
                 drawable = R.drawable.circle_gray;
-                break;
         }
 
         circle.setBackground(ContextCompat.getDrawable(this, drawable));

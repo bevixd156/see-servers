@@ -72,10 +72,52 @@ public class FirebaseRepositorio {
                                     batch.delete(document.getReference());
                                 }
 
-                                // Ejecutar todas las eliminaciones juntas
-                                batch.commit()
-                                        .addOnCompleteListener(listener)
-                                        .addOnFailureListener(e -> Log.e(TAG, "Error en batch de eliminación", e));
+                                // Buscar y eliminar comentarios de PlayStation
+                                db.collection(COLECCION_COMENTARIOS)
+                                        .document("playstation").collection("lista")
+                                        .whereEqualTo("userId", userId)
+                                        .get()
+                                        .addOnSuccessListener(queryPs -> {
+
+                                            for (DocumentSnapshot document : queryPs.getDocuments()) {
+                                                batch.delete(document.getReference());
+                                            }
+
+                                            // Buscar y eliminar comentarios de Xbox
+                                            db.collection(COLECCION_COMENTARIOS)
+                                                    .document("xbox").collection("lista")
+                                                    .whereEqualTo("userId", userId)
+                                                    .get()
+                                                    .addOnSuccessListener(queryXbox -> {
+
+                                                        for (DocumentSnapshot document : queryXbox.getDocuments()) {
+                                                            batch.delete(document.getReference());
+                                                        }
+
+                                                        // Buscar y eliminar comentarios de Nintendo
+                                                        db.collection(COLECCION_COMENTARIOS)
+                                                                .document("nintendo").collection("lista")
+                                                                .whereEqualTo("userId", userId)
+                                                                .get()
+                                                                .addOnSuccessListener(queryNintendo -> {
+
+                                                                    for (DocumentSnapshot document : queryNintendo.getDocuments()) {
+                                                                        batch.delete(document.getReference());
+                                                                    }
+
+                                                                    // Ejecutar todas las eliminaciones juntas (COMMIT FINAL)
+                                                                    batch.commit()
+                                                                            .addOnCompleteListener(listener)
+                                                                            .addOnFailureListener(e -> Log.e(TAG, "Error en batch de eliminación (Commit)", e));
+                                                                })
+                                                                .addOnFailureListener(e ->
+                                                                        Log.e(TAG, "Error buscando comentarios de Nintendo", e));
+                                                    })
+                                                    .addOnFailureListener(e ->
+                                                            Log.e(TAG, "Error buscando comentarios de Xbox", e));
+                                        })
+                                        .addOnFailureListener(e ->
+                                                Log.e(TAG, "Error buscando comentarios de PlayStation", e));
                             })
                             .addOnFailureListener(e ->
                                     Log.e(TAG, "Error buscando comentarios de Epic", e));

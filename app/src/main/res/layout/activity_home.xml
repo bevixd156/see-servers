@@ -131,4 +131,136 @@
                 android:textStyle="bold"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <!-- Apartado Nintendo -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardNintendo"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="6dp">
+        <!-- Espaciado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="180dp"
+                android:layout_height="80dp"
+                android:src="@drawable/nintendo"
+                android:contentDescription="Nintendo Logo"/>
+            <!-- Título -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Nintendo"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Apartado Cloudflare -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardCloudflare"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="6dp">
+        <!-- Espaciado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="180dp"
+                android:layout_height="80dp"
+                android:src="@drawable/cloudflare"
+                android:contentDescription="Cloudflare Logo"/>
+            <!-- Título -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Cloudflare"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Apartado GitHub -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardGithub"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="6dp">
+        <!-- Espaciado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="180dp"
+                android:layout_height="80dp"
+                android:src="@drawable/github"
+                android:contentDescription="GitHub Logo"/>
+            <!-- Título -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="GitHub"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Apartado Google Cloud -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardGooglecloud"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="6dp">
+        <!-- Espaciado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="180dp"
+                android:layout_height="80dp"
+                android:src="@drawable/googlecloud"
+                android:contentDescription="Googlecloud Logo"/>
+            <!-- Título -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Google Cloud"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

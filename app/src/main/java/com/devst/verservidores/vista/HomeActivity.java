@@ -32,43 +32,71 @@ public class HomeActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
 
-        // // Referencias UI
+        // Referencias UI
         Toolbar toolbar = findViewById(R.id.toolbar);
         CardView cardEpic = findViewById(R.id.cardEpic);
         CardView cardDiscord = findViewById(R.id.cardDiscord);
+        CardView cardNintendo = findViewById(R.id.cardNintendo);
+        CardView cardCloudflare = findViewById(R.id.cardCloudflare);
+        CardView cardGithub = findViewById(R.id.cardGithub);
+        CardView cardGooglecloud = findViewById(R.id.cardGooglecloud);
         ImageView iconConfig = findViewById(R.id.iconConfig);
         ImageView iconPerfil = findViewById(R.id.iconPerfil);
 
-        // // Animación para los cardviews
+        // Animación para los cardviews
         Animation zoom = AnimationUtils.loadAnimation(this, R.anim.scale_up);
 
-        // // Abrir configuración
+        // Abrir configuración
         iconConfig.setOnClickListener(v ->
                 startActivity(new Intent(HomeActivity.this, ConfigActivity.class))
         );
 
-        // // Abrir perfil del usuario
+        // Abrir perfil del usuario
         iconPerfil.setOnClickListener(v ->
                 startActivity(new Intent(this, PerfilActivity.class))
         );
 
-        // // Ir a EpicActivity con animación
+        // Ir a EpicActivity con animación
         cardEpic.setOnClickListener(v -> {
             v.startAnimation(zoom);
             startActivity(new Intent(this, EpicActivity.class));
         });
 
-        // // Ir a DiscordActivity con animación
+        // Ir a DiscordActivity con animación
         cardDiscord.setOnClickListener(v -> {
             v.startAnimation(zoom);
             startActivity(new Intent(this, DiscordActivity.class));
         });
 
-        // // Activar toolbar
+        // Ir a NintendoActivity con animación
+        cardNintendo.setOnClickListener(v -> {
+            v.startAnimation(zoom);
+            startActivity(new Intent(this, NintendoActivity.class));
+        });
+
+        // Ir a Cloudflare con animación
+        cardCloudflare.setOnClickListener(v -> {
+            v.startAnimation(zoom);
+            startActivity(new Intent(this, CloudflareActivity.class));
+        });
+
+        // Ir a Github con animación
+        cardGithub.setOnClickListener(v -> {
+            v.startAnimation(zoom);
+            startActivity(new Intent(this, GithubActivity.class));
+        });
+
+        // Ir a Google Cloud con animación
+        cardGooglecloud.setOnClickListener(v -> {
+            v.startAnimation(zoom);
+            startActivity(new Intent(this, GoogleCloudActivity.class));
+        });
+
+        // Activar toolbar
         setSupportActionBar(toolbar);
     }
 
-    // // Cargar foto de perfil del usuario desde SQLite
+    // Cargar foto de perfil del usuario desde SQLite
     private void cargarFotoPerfil() {
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         int userId = prefs.getInt("user_id", -1);
@@ -114,20 +142,20 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // // Recargar foto al volver
+        // Recargar foto al volver
         cargarFotoPerfil();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // // Inflar menú superior
+        // Inflar menú superior
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        // // Eventos del menú
+        // Eventos del menú
         if (item.getItemId() == R.id.cerrar_sesion) {
             startActivity(new Intent(this, LoginActivity.class));
             return true;
