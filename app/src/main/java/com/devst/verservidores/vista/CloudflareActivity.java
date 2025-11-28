@@ -1,5 +1,6 @@
 package com.devst.verservidores.vista;
 
+// Importaciones necesarias
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,18 +29,28 @@ import com.google.firebase.firestore.Query;
 
 public class CloudflareActivity extends AppCompatActivity {
 
+    // Contenedores de comentarios y servicios
     private LinearLayout commentsContainer;
     private LinearLayout servicesContainer;
+
+    // EditText y botón para nuevos comentarios
     private EditText edtNewComment;
     private Button btnSendComment;
 
+    // Manager de comentarios
     private ComentarioManager comentarioManager;
+
+    // Repositorios y DB
     private FirebaseRepositorio firebaseRepo;
     private AdminSQLiteOpenHelper dbHelper;
+
+    // Listener para Firestore
     private ListenerRegistration firestoreRegistration;
 
+    // ID del usuario actual
     private int currentUserId;
 
+    // Constantes de la clase
     private static final String TIPO_SERVICIO = "cloudflare";
     private static final String URL = "https://www.cloudflarestatus.com/api/v2/components.json";
     private static final String TAG = "CloudflareActivity";
@@ -49,11 +60,11 @@ public class CloudflareActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cloudflare);
 
-        // Firebase y DB
+        // Inicializar Firebase y DB
         firebaseRepo = new FirebaseRepositorio();
         dbHelper = new AdminSQLiteOpenHelper(this);
 
-        // Toolbar
+        // Configurar Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -62,23 +73,23 @@ public class CloudflareActivity extends AppCompatActivity {
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.white));
         }
 
-        // Referencias XML
+        // Referencias de vistas
         servicesContainer = findViewById(R.id.servicesContainer);
         commentsContainer = findViewById(R.id.commentsContainer);
-
         edtNewComment = findViewById(R.id.edtNewComment);
         btnSendComment = findViewById(R.id.btnSendComment);
         ScrollView scrollComments = findViewById(R.id.scrollComments);
 
-        // Usuario
+        // Obtener usuario logueado
         SharedPreferences prefs = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         currentUserId = prefs.getInt("user_id", -1);
         if (currentUserId == -1) {
+            // Si no hay usuario, cerrar actividad
             finish();
             return;
         }
 
-        // Manager comentarios
+        // Inicializar ComentarioManager
         comentarioManager = new ComentarioManager(
                 this,
                 commentsContainer,
@@ -88,12 +99,12 @@ public class CloudflareActivity extends AppCompatActivity {
                 currentUserId
         );
 
-        // Cargar datos
+        // Cargar servicios y comentarios
         loadCloudflareServices();
         comentarioManager.loadComments(TIPO_SERVICIO);
         startFirebaseListener();
 
-        // Botón enviar
+        // Configurar botón enviar comentario
         btnSendComment.setOnClickListener(v -> {
             String text = edtNewComment.getText().toString().trim();
             if (!text.isEmpty()) {
@@ -103,7 +114,7 @@ public class CloudflareActivity extends AppCompatActivity {
         });
     }
 
-    // Listener Firebase
+    // Inicializar listener de Firebase para comentarios
     private void startFirebaseListener() {
         Query query = firebaseRepo.getComentariosQuery(TIPO_SERVICIO);
         firestoreRegistration = query.addSnapshotListener((snapshots, e) -> {
@@ -111,6 +122,7 @@ public class CloudflareActivity extends AppCompatActivity {
                 Log.e(TAG, "Error firebase:", e);
                 return;
             }
+            // Recargar comentarios
             comentarioManager.loadComments(TIPO_SERVICIO);
         });
     }
@@ -118,19 +130,21 @@ public class CloudflareActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // Quitar listener al salir
         if (firestoreRegistration != null) firestoreRegistration.remove();
     }
 
-    // Obtener JSON
+    // Cargar servicios desde Cloudflare
     private void loadCloudflareServices() {
         servicesContainer.removeAllViews();
         new Thread(() -> {
+            // Obtener JSON
             String json = ApiFetcher.getJson(URL);
             runOnUiThread(() -> populateCloudflare(json));
         }).start();
     }
 
-    // Procesar JSON
+    // Procesar JSON y mostrar bloques de servicios
     private void populateCloudflare(String json) {
         if (json == null) return;
 
@@ -142,31 +156,36 @@ public class CloudflareActivity extends AppCompatActivity {
         for (JsonElement e : obj.getAsJsonArray("components")) {
             JsonObject comp = e.getAsJsonObject();
 
+            // Nombre y estado del servicio
             String name = comp.has("name") ? comp.get("name").getAsString() : "Desconocido";
             String status = comp.has("status") ? comp.get("status").getAsString() : "unknown";
 
+            // Crear bloque visual
             servicesContainer.addView(createServiceBlock(name, status));
         }
     }
 
-    // Crear bloque visual
+    // Crear bloque visual para cada servicio
     private LinearLayout createServiceBlock(String name, String status) {
         LinearLayout block = new LinearLayout(this);
         block.setOrientation(LinearLayout.HORIZONTAL);
         block.setGravity(Gravity.CENTER_VERTICAL);
         block.setPadding(0, 10, 0, 10);
 
+        // TextView con nombre y estado
         TextView tv = new TextView(this);
         tv.setText(name + " : " + status);
         tv.setTextSize(18);
         tv.setTypeface(null, android.graphics.Typeface.BOLD);
         tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
+        // Indicador de estado
         View circle = new View(this);
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(40, 40);
         p.setMarginStart(10);
         circle.setLayoutParams(p);
 
+        // Selección de color según estado
         int drawable;
         switch (status.toLowerCase()) {
             case "operational":
@@ -182,15 +201,16 @@ public class CloudflareActivity extends AppCompatActivity {
             default:
                 drawable = R.drawable.circle_gray;
         }
-
         circle.setBackground(ContextCompat.getDrawable(this, drawable));
 
+        // Agregar vistas al bloque
         block.addView(tv);
         block.addView(circle);
 
         return block;
     }
 
+    // Acción de la flecha atrás
     @Override
     public boolean onSupportNavigateUp() {
         finish();
